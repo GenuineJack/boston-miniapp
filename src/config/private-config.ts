@@ -8,9 +8,15 @@ const privateConfigSchema = z.object({
   coingeckoApiKey: z.string(),
 });
 
-export const privateConfig = privateConfigSchema.parse({
+const rawPrivateConfig = {
   neynarApiKey: process.env.NEYNAR_API_KEY || "",
   coingeckoApiKey:
-    // demo coingecko key, not sensitive
     process.env.COINGECKO_API_KEY || "CG-UviYfmkExfr86X5JFTZfaVbb",
-});
+};
+
+const parsed = privateConfigSchema.safeParse(rawPrivateConfig);
+if (!parsed.success) {
+  console.warn("[config] private-config validation warnings:", parsed.error);
+}
+
+export const privateConfig = rawPrivateConfig;

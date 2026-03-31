@@ -15,6 +15,7 @@ import { getSpots, getBuilderByFid } from "@/db/actions/boston-actions";
 import type { Builder } from "@/features/boston/types";
 import type { WeatherCache } from "@/features/boston/components/weather-strip";
 import type { SportsCache } from "@/features/boston/components/sports-row";
+import type { NewsItem } from "@/app/api/news/route";
 import { useEffect } from "react";
 
 type SubmitMode = "picker" | "spot" | "happening";
@@ -52,6 +53,7 @@ export function MiniApp() {
   // Lifted API caches — survive tab switches for the entire session
   const [weatherCache, setWeatherCache] = useState<WeatherCache>(null);
   const [sportsCache, setSportsCache] = useState<SportsCache>(null);
+  const [newsCache, setNewsCache] = useState<NewsItem[] | null>(null);
 
   useEffect(() => {
     getSpots()
@@ -194,6 +196,8 @@ export function MiniApp() {
               onWeatherCacheUpdate={setWeatherCache}
               sportsCache={sportsCache}
               onSportsCacheUpdate={setSportsCache}
+              newsCache={newsCache}
+              onNewsCacheUpdate={setNewsCache}
             />
           )}
           {activeTab === "builders" && (

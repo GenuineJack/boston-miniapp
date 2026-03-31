@@ -1,14 +1,13 @@
 @import "@neynar/ui/styles";
-/* Google Fonts are loaded via next/font in layout.tsx */
 
 /* ============================================
    BOSTON DESIGN SYSTEM — Tailwind v4 theme tokens
    ============================================ */
 @theme {
-  /* Font families — connected to next/font CSS variables */
-  --font-sans: var(--font-montserrat), Arial, sans-serif;
-  --font-serif: var(--font-lora), Georgia, serif;
-  --font-mono: var(--font-geist-mono), monospace;
+  /* Font families */
+  --font-sans: 'Montserrat', Arial, sans-serif;
+  --font-serif: 'Lora', Georgia, serif;
+  --font-mono: 'Geist Mono', monospace;
 
   /* Boston color palette */
   --color-navy: #091f2f;
@@ -25,9 +24,9 @@
 }
 
 :root {
-  --font-sans: var(--font-montserrat), Arial, sans-serif;
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-lora), Georgia, serif;
+  --font-sans: 'Montserrat', Arial, sans-serif;
+  --font-serif: 'Lora', Georgia, serif;
+  --font-mono: 'Geist Mono', monospace;
   /* Boston Community Guide Design System */
   /* Primary colors */
   --primary: #091f2f;

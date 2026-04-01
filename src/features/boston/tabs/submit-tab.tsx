@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useFarcasterUser } from "@/neynar-farcaster-sdk/mini";
-import { useShare } from "@/neynar-farcaster-sdk/mini";
+import { useFarcasterUser, useShare } from "@/neynar-farcaster-sdk/mini";
 import { CATEGORIES, NEIGHBORHOODS, CATEGORY_ICONS, Category } from "@/features/boston/types";
 import { submitSpot, logSubmissionError } from "@/db/actions/boston-actions";
 
@@ -31,32 +30,6 @@ type SuccessData = {
   category: string;
   neighborhood: string;
 };
-
-function inputStyle(hasError?: boolean) {
-  return {
-    fontFamily: "var(--font-sans)",
-    background: "#fff",
-    color: "#091f2f",
-    border: `2px solid ${hasError ? "#d22d23" : "#e0e0e0"}`,
-    borderRadius: "3px",
-    padding: "10px 12px",
-    fontSize: "13px",
-    width: "100%",
-    outline: "none",
-    minHeight: "44px",
-    transition: "border-color 0.15s, box-shadow 0.15s",
-  } as React.CSSProperties;
-}
-
-function handleInputFocus(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
-  e.target.style.borderColor = "#1871bd";
-  e.target.style.boxShadow = "0 0 0 2px rgba(24,113,189,0.12)";
-}
-function handleInputBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
-  e.target.style.borderColor = "#e0e0e0";
-  e.target.style.boxShadow = "none";
-}
-
 
 function SuccessSpotPreview({
   data,
@@ -91,6 +64,7 @@ function SuccessSpotPreview({
         className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-wide t-sans-gray"
       >
         {pfpUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img src={pfpUrl} alt={displayName} className="w-5 h-5 rounded-full object-cover shrink-0" />
         ) : (
           <div
@@ -245,15 +219,13 @@ export function SubmitTab() {
           <div className="flex flex-col gap-3 w-full">
             <button
               onClick={handleShare}
-              className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest t-sans-white bg-boston-blue"
-              style={{ minHeight: "44px" }}
+              className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest t-sans-white bg-boston-blue min-h-11"
             >
               Share to /boston
             </button>
             <button
               onClick={() => setState("form")}
-              className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest border-2 t-sans-navy bg-transparent border-navy"
-              style={{ minHeight: "44px" }}
+              className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest border-2 t-sans-navy bg-transparent border-navy min-h-11"
             >
               Add Another
             </button>
@@ -288,9 +260,7 @@ export function SubmitTab() {
             placeholder="e.g. Tatte Bakery"
             value={form.name}
             onChange={(e) => handleFieldChange({ name: e.target.value })}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            style={inputStyle(!!errors.name)}
+            className={`submit-input ${errors.name ? "submit-input-error" : ""}`}
           />
           {errors.name && (
             <p className="text-[10px] mt-1 font-bold t-sans-red">
@@ -305,10 +275,8 @@ export function SubmitTab() {
           <select
             value={form.category}
             onChange={(e) => handleFieldChange({ category: e.target.value })}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
             aria-label="Category"
-            style={inputStyle(!!errors.category)}
+            className={`submit-input ${errors.category ? "submit-input-error" : ""}`}
           >
             <option value="">Select a category</option>
             {CATEGORIES.map((c) => (
@@ -328,10 +296,8 @@ export function SubmitTab() {
           <select
             value={form.neighborhood}
             onChange={(e) => handleFieldChange({ neighborhood: e.target.value })}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
             aria-label="Neighborhood"
-            style={inputStyle(!!errors.neighborhood)}
+            className={`submit-input ${errors.neighborhood ? "submit-input-error" : ""}`}
           >
             <option value="">Select a neighborhood</option>
             {NEIGHBORHOODS.map((n) => (
@@ -352,14 +318,8 @@ export function SubmitTab() {
             placeholder="One sentence. Be specific. 140 chars max."
             value={form.description}
             onChange={(e) => handleFieldChange({ description: e.target.value })}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
             rows={3}
-            style={{
-              ...inputStyle(!!errors.description),
-              resize: "none",
-              minHeight: "80px",
-            }}
+            className={`submit-input submit-textarea ${errors.description ? "submit-input-error" : ""}`}
           />
           <div className="flex justify-between items-center mt-1">
             {errors.description ? (
@@ -368,10 +328,7 @@ export function SubmitTab() {
               </p>
             ) : <span />}
             <span
-              className="text-[10px] font-medium t-sans"
-              style={{
-                color: form.description.length > 130 ? "#d22d23" : "#828282",
-              }}
+              className={`text-[10px] font-medium t-sans ${form.description.length > 130 ? "text-boston-red" : "text-boston-gray-400"}`}
             >
               {form.description.length}/140
             </span>
@@ -388,9 +345,7 @@ export function SubmitTab() {
             placeholder="e.g. 70 Farnsworth St, Boston"
             value={form.address}
             onChange={(e) => handleFieldChange({ address: e.target.value })}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            style={inputStyle()}
+            className="submit-input"
           />
         </div>
 
@@ -404,9 +359,7 @@ export function SubmitTab() {
             placeholder="e.g. https://tattebakery.com"
             value={form.link}
             onChange={(e) => handleFieldChange({ link: e.target.value })}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            style={inputStyle(!!errors.link)}
+            className={`submit-input ${errors.link ? "submit-input-error" : ""}`}
           />
           {errors.link && (
             <p className="text-[10px] mt-1 font-bold t-sans-red">
@@ -418,8 +371,7 @@ export function SubmitTab() {
         {/* Error state */}
         {state === "error" && (
           <div
-            className="p-3 rounded-sm text-xs font-bold t-sans-red"
-            style={{ background: "rgba(210,45,35,0.08)", border: "1px solid rgba(210,45,35,0.2)" }}
+            className="p-3 rounded-sm text-xs font-bold t-sans-red submit-error-box"
           >
             <p className="uppercase tracking-wide mb-1">Submission failed</p>
             {serverError && (
@@ -441,8 +393,7 @@ export function SubmitTab() {
         <button
           type="submit"
           disabled={state === "submitting"}
-          className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-colors duration-150 disabled:opacity-50 t-sans-white bg-navy"
-          style={{ minHeight: "48px" }}
+          className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-colors duration-150 disabled:opacity-50 t-sans-white bg-navy min-h-12"
         >
           {state === "submitting" ? "Adding..." : "Add to /boston"}
         </button>

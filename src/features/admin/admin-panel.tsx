@@ -45,7 +45,7 @@ export function AdminPanel() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-boston-gray-50">
-        <p className="t-sans-gray" style={{ fontSize: "12px" }}>Loading...</p>
+        <p className="t-sans-gray text-xs">Loading...</p>
       </div>
     );
   }
@@ -89,8 +89,7 @@ export function AdminPanel() {
           Admin Panel
         </h1>
         <p
-          className="text-[10px] uppercase tracking-widest t-sans"
-          style={{ color: "rgba(255,255,255,0.5)" }}
+          className="text-[10px] uppercase tracking-widest t-sans text-white/50"
         >
           FID {user.fid} · @{user.username}
         </p>
@@ -116,8 +115,7 @@ export function AdminPanel() {
           {pending.map((spot) => (
             <div
               key={spot.id}
-              className="bg-white rounded-sm p-3 mb-2"
-              style={{ border: "2px solid #e0e0e0" }}
+              className="bg-white rounded-sm p-3 mb-2 box-bordered"
             >
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div>
@@ -135,15 +133,13 @@ export function AdminPanel() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleApprove(spot.id)}
-                  className="px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans-white bg-boston-blue"
-                  style={{ border: "none", cursor: "pointer" }}
+                  className="px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans-white bg-boston-blue border-none cursor-pointer"
                 >
                   Approve
                 </button>
                 <button
                   onClick={() => handleReject(spot.id)}
-                  className="px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans-red bg-transparent"
-                  style={{ border: "1px solid #d22d23", cursor: "pointer" }}
+                  className="px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans-red bg-transparent border border-boston-red cursor-pointer"
                 >
                   Reject
                 </button>
@@ -171,13 +167,11 @@ export function AdminPanel() {
           {errors.map((err) => (
             <div
               key={err.id}
-              className="bg-white rounded-sm p-3 mb-2"
-              style={{ border: "1px solid #e0e0e0" }}
+              className="bg-white rounded-sm p-3 mb-2 box-bordered-thin"
             >
               <div className="flex items-center gap-2 mb-1">
                 <span
-                  className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-sm t-sans-red"
-                  style={{ background: "rgba(210,45,35,0.1)" }}
+                  className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-sm t-sans-red admin-error-badge"
                 >
                   {err.type}
                 </span>
@@ -192,7 +186,7 @@ export function AdminPanel() {
                 <summary className="text-[10px] cursor-pointer t-sans-gray">
                   Payload
                 </summary>
-                <pre className="text-[10px] mt-1 p-2 overflow-x-auto bg-boston-gray-50" style={{ borderRadius: "2px", color: "#58585b" }}>
+                <pre className="text-[10px] mt-1 p-2 overflow-x-auto bg-boston-gray-50 admin-pre">
                   {err.payload}
                 </pre>
               </details>

@@ -28,7 +28,6 @@ export function SpotCard({ spot, onClick, isNew }: SpotCardProps) {
   return (
     <div
       onClick={() => onClick?.(spot)}
-      role="button"
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick?.(spot); }}
       className="w-full text-left border-2 border-[#e0e0e0] rounded-sm p-3 bg-white transition-colors duration-150 hover:border-[#1871bd] focus:outline-none focus:border-[#1871bd] group cursor-pointer"
@@ -48,8 +47,7 @@ export function SpotCard({ spot, onClick, isNew }: SpotCardProps) {
         )}
         {spot.featured && !isNew && (
           <span
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest shrink-0 t-sans-navy"
-            style={{ background: "#fcb61a" }}
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest shrink-0 t-sans-navy bg-boston-yellow"
           >
             ★ Pick
           </span>

@@ -6,11 +6,13 @@ const privateConfigSchema = z.object({
     .string()
     .min(1, "NEYNAR_API_KEY environment variable is required"),
   coingeckoApiKey: z.string(),
+  seedSecret: z.string(),
 });
 
 const rawPrivateConfig = {
   neynarApiKey: process.env.NEYNAR_API_KEY || "",
   coingeckoApiKey: process.env.COINGECKO_API_KEY || "",
+  seedSecret: process.env.SEED_SECRET || "",
 };
 
 const parsed = privateConfigSchema.safeParse(rawPrivateConfig);

@@ -61,8 +61,7 @@ function SeasonalBlockCard({ block }: { block: SeasonalBlock }) {
       <div className="flex items-center gap-2 mb-2">
         <span className="text-lg">{block.emoji}</span>
         <span
-          className="text-[9px] font-bold uppercase tracking-widest t-sans"
-          style={{ color: "#fcb61a" }}
+          className="text-[9px] font-bold uppercase tracking-widest t-sans seasonal-label"
         >
           Seasonal
         </span>
@@ -73,8 +72,7 @@ function SeasonalBlockCard({ block }: { block: SeasonalBlock }) {
         {block.title}
       </h3>
       <p
-        className="text-xs italic leading-relaxed t-serif"
-        style={{ color: "rgba(255,255,255,0.75)" }}
+        className="text-xs italic leading-relaxed t-serif text-white/75"
       >
         {block.description}
       </p>
@@ -150,7 +148,7 @@ export function WhatsNewTab({ spots: parentSpots, loading: parentLoading, onSele
       </div>
 
       {/* Category filter */}
-      <div className="py-2 bg-boston-gray-50" style={{ borderBottom: "1px solid #e0e0e0" }}>
+      <div className="py-2 bg-boston-gray-50 border-b border-[#e0e0e0]">
         <CategoryFilterBar
           active={activeCategory}
           onChange={(cat) => setActiveCategory(cat === activeCategory ? "All" : cat)}
@@ -161,7 +159,7 @@ export function WhatsNewTab({ spots: parentSpots, loading: parentLoading, onSele
         {loading ? (
           <>
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="rounded-sm bg-[#e0e0e0] animate-pulse" style={{ height: "112px" }} />
+              <div key={i} className="rounded-sm bg-[#e0e0e0] animate-pulse h-28" />
             ))}
           </>
         ) : spots.length === 0 ? (

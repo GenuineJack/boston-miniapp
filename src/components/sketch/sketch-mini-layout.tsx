@@ -1,8 +1,8 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { SketchHeading } from "./sketch-heading";
-import { SketchFilters } from "./sketch-filters";
+import { SketchHeading } from "@/components/sketch/sketch-heading";
+import { SketchFilters } from "@/components/sketch/sketch-filters";
 
 type SketchTab = {
   label: string;
@@ -92,8 +92,7 @@ export function SketchMiniLayout({
         <div className="h-dvh flex flex-col overflow-hidden sketch-paper p-1">
           {/* Sketchy outer border */}
           <div
-            className="flex-1 flex flex-col min-h-0 sketch-border"
-            style={{ filter: "url(#sketchy)" }}
+            className="flex-1 flex flex-col min-h-0 sketch-border sketch-filter"
           >
             {/* Header */}
             <header className="shrink-0 px-3 py-2 sketch-border-b">
@@ -145,8 +144,7 @@ export function SketchMiniLayout({
         <div className="h-dvh flex flex-col overflow-hidden sketch-paper p-1">
           {/* Sketchy outer border */}
           <div
-            className="flex-1 flex flex-col min-h-0 sketch-border"
-            style={{ filter: "url(#sketchy)" }}
+            className="flex-1 flex flex-col min-h-0 sketch-border sketch-filter"
           >
             {/* Header */}
             <header className="shrink-0 px-3 py-2 sketch-border-b">
@@ -175,8 +173,7 @@ export function SketchMiniLayout({
       <div className="min-h-dvh flex flex-col sketch-paper p-1">
         {/* Sketchy outer border */}
         <div
-          className="flex-1 flex flex-col sketch-border"
-          style={{ filter: "url(#sketchy)" }}
+          className="flex-1 flex flex-col sketch-border sketch-filter"
         >
           {/* Fixed Header */}
           <header className="sticky top-1 z-10 px-3 py-2 sketch-border-b bg-[#fafafa]/95 backdrop-blur-sm">

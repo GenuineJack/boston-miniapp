@@ -2,7 +2,7 @@
 
 import { db } from "@/neynar-db-sdk/db";
 import { spots, builders, communityHappenings, submissionErrors } from "@/db/schema";
-import { eq, desc, and, gte, or, isNull, count, sql as drizzleSql } from "drizzle-orm";
+import { eq, desc, and, gte, or, isNull, count } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import type { Builder, Spot } from "@/features/boston/types";
 import { verifyAdmin, verifyFid } from "@/db/actions/admin-auth";

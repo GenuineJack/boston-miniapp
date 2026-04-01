@@ -16,8 +16,7 @@ const LeafletMapInner = dynamic(
 function MapSkeleton() {
   return (
     <div
-      className="w-full animate-pulse"
-      style={{ height: MAP_HEIGHT, background: "#0d1b2a", position: "relative" }}
+      className="w-full animate-pulse map-skeleton"
     >
       {/* Decorative street lines */}
       <svg width="100%" height="100%" viewBox="0 0 380 200" preserveAspectRatio="xMidYMid slice" className="absolute inset-0">
@@ -57,14 +56,11 @@ export function MapView({ spots, onSpotClick }: MapViewProps) {
 
       {/* Spot count badge */}
       <div
-        className="absolute top-3 right-3 px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest z-[1000] pointer-events-none t-sans-white bg-navy"
-        style={{
-          border: "1px solid rgba(255,255,255,0.2)",
-        }}
+        className="absolute top-3 right-3 px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest z-[1000] pointer-events-none t-sans-white bg-navy map-badge-border"
       >
         {spots.length} {spots.length === 1 ? "spot" : "spots"}
         {spotsWithCoords.length < spots.length && (
-          <span style={{ opacity: 0.55, marginLeft: "4px" }}>
+          <span className="opacity-55 ml-1">
             ({spotsWithCoords.length} mapped)
           </span>
         )}
@@ -79,7 +75,7 @@ export function MapView({ spots, onSpotClick }: MapViewProps) {
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#fcb61a" }} />
+          <div className="w-2.5 h-2.5 rounded-full bg-boston-yellow" />
           <span className="text-[9px] font-bold uppercase tracking-wide text-white opacity-60 t-sans">
             Featured
           </span>

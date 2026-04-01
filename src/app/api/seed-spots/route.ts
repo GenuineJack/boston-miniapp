@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/neynar-db-sdk/db";
 import { spots } from "@/db/schema";
 import { sql } from "drizzle-orm";
+import { privateConfig } from "@/config/private-config";
 
 // Simple secret-based guard so random internet users can't re-seed/wipe data.
 // Set SEED_SECRET in .env to any random string before calling this endpoint.
-const SEED_SECRET = process.env.SEED_SECRET ?? "";
+const SEED_SECRET = privateConfig.seedSecret;
 
 const SEED_SPOTS = [
   { id: "03baac4a-aedb-42c0-9b71-6008fa6b3ff4", name: "Sarma", category: "Food & Drink", subcategory: "Dinner", neighborhood: "Cambridge / Somerville", description: "Turkish meyhane that's been booking up for a decade. The lentil nachos are not a joke.", address: "249 Pearl St, Somerville, MA 02145", latitude: 42.3798, longitude: -71.097, submittedByFid: 218957, submittedByUsername: "genuinejack", submittedByDisplayName: "Genuine Jack", submittedByPfpUrl: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/533a424d-d6f8-4c6a-30ec-7658555db700/original", featured: true, status: "approved", createdAt: new Date("2026-03-03T18:00:00.000Z"), link: "https://www.sarmarestaurant.com" },

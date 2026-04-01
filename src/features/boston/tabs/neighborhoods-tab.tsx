@@ -56,10 +56,7 @@ function NeighborhoodDetail({ neighborhood, spotCount, onBack, onViewSpots, onSe
           {spotCount > 0 && (
             <button
               onClick={() => onViewSpots(neighborhood.id)}
-              className="px-4 py-2 rounded-sm text-xs font-bold uppercase tracking-widest shrink-0 focus:outline-none t-sans-white bg-boston-blue"
-              style={{
-                minHeight: "36px",
-              }}
+              className="px-4 py-2 rounded-sm text-xs font-bold uppercase tracking-widest shrink-0 focus:outline-none t-sans-white bg-boston-blue min-h-9"
             >
               View Spots
             </button>
@@ -86,7 +83,7 @@ function NeighborhoodDetail({ neighborhood, spotCount, onBack, onViewSpots, onSe
         {spotsLoading ? (
           <div className="flex flex-col gap-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-sm bg-[#e0e0e0] animate-pulse" style={{ height: "48px" }} />
+              <div key={i} className="rounded-sm bg-[#e0e0e0] animate-pulse h-12" />
             ))}
           </div>
         ) : inlineSpots.length === 0 ? (
@@ -109,8 +106,7 @@ function NeighborhoodDetail({ neighborhood, spotCount, onBack, onViewSpots, onSe
                 <button
                   key={spot.id}
                   onClick={() => onSelectSpot(spot)}
-                  className="w-full text-left flex items-center justify-between gap-2 px-3 py-2.5 rounded-sm transition-colors duration-150 hover:bg-[#e0e0e0] bg-white"
-                  style={{ border: "1px solid #e0e0e0" }}
+                  className="w-full text-left flex items-center justify-between gap-2 px-3 py-2.5 rounded-sm transition-colors duration-150 hover:bg-[#e0e0e0] bg-white spot-list-btn"
                 >
                   <span
                     className="text-xs font-bold truncate t-sans-navy"
@@ -128,8 +124,7 @@ function NeighborhoodDetail({ neighborhood, spotCount, onBack, onViewSpots, onSe
             {spotCount > 5 && (
               <button
                 onClick={() => onViewSpots(neighborhood.id)}
-                className="mt-3 text-[10px] font-bold uppercase tracking-widest t-sans-blue"
-                style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                className="mt-3 text-[10px] font-bold uppercase tracking-widest t-sans-blue btn-unstyled"
               >
                 View all in Explore →
               </button>
@@ -151,10 +146,7 @@ function NeighborhoodCard({ neighborhood, spotCount, onClick }: NeighborhoodCard
   return (
     <button
       onClick={onClick}
-      className="w-full text-left p-4 rounded-sm transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1871bd] group hover:bg-[#091f2f] bg-boston-gray-50"
-      style={{
-        minHeight: "110px",
-      }}
+      className="w-full text-left p-4 rounded-sm transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1871bd] group hover:bg-[#091f2f] bg-boston-gray-50 min-h-[110px]"
     >
       <h3
         className="text-sm font-black uppercase tracking-tight leading-none mb-1.5 text-[#091f2f] group-hover:text-white transition-colors duration-200 t-sans"
@@ -188,18 +180,11 @@ function RegionCard({ neighborhood, spotCount, onClick }: RegionCardProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full text-left p-4 rounded-sm transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1871bd] hover:bg-[#f8f8f8] bg-white"
-      style={{
-        borderLeft: "4px solid #1871bd",
-        border: "1px solid #e0e0e0",
-        borderLeftWidth: "4px",
-        borderLeftColor: "#1871bd",
-      }}
+      className="w-full text-left p-4 rounded-sm transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1871bd] hover:bg-[#f8f8f8] bg-white region-card"
     >
       <div className="flex items-center gap-2 mb-1.5">
         <span
-          className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-sm t-sans-blue"
-          style={{ background: "rgba(24,113,189,0.1)" }}
+          className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-sm t-sans-blue region-badge"
         >
           Region
         </span>
@@ -294,13 +279,7 @@ export function NeighborhoodsTab({ onNavigateToExplore, onSelectSpot }: Neighbor
       <div className="flex items-center justify-center py-4 px-4">
         <div className="flex-1 border-t border-[#e0e0e0]" />
         <span
-          className="px-3 t-sans-gray"
-          style={{
-            fontSize: "9px",
-            fontWeight: "700",
-            textTransform: "uppercase",
-            letterSpacing: "0.15em",
-          }}
+          className="px-3 t-sans-gray region-divider-label"
         >
           — Greater Boston Region —
         </span>

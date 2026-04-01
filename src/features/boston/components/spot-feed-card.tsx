@@ -23,9 +23,7 @@ export function SpotFeedCard({ spot, onClick }: { spot: Spot; onClick?: (spot: S
     <div
       className={`bg-white p-4 border-2 border-[#e0e0e0] rounded-sm transition-colors duration-150 ${onClick ? "cursor-pointer hover:border-[#1871bd]" : ""}`}
       onClick={() => onClick?.(spot)}
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") onClick(spot); } : undefined}
+      {...(onClick ? { role: "button" as const, tabIndex: 0, onKeyDown: (e: React.KeyboardEvent) => { if (e.key === "Enter" || e.key === " ") onClick(spot); } } : {})}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <span
@@ -54,6 +52,7 @@ export function SpotFeedCard({ spot, onClick }: { spot: Spot; onClick?: (spot: S
 
       <div className="flex items-center gap-2">
         {spot.submittedByPfpUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={spot.submittedByPfpUrl}
             alt={spot.submittedByDisplayName}

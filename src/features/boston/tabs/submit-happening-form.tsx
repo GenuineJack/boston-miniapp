@@ -31,31 +31,6 @@ const EMPTY_FORM: FormData = {
   url: "",
 };
 
-function inputStyle(hasError?: boolean) {
-  return {
-    fontFamily: "var(--font-sans)",
-    background: "#fff",
-    color: "#091f2f",
-    border: `2px solid ${hasError ? "#d22d23" : "#e0e0e0"}`,
-    borderRadius: "3px",
-    padding: "10px 12px",
-    fontSize: "13px",
-    width: "100%",
-    outline: "none",
-    minHeight: "44px",
-    transition: "border-color 0.15s, box-shadow 0.15s",
-  } as React.CSSProperties;
-}
-
-function handleInputFocus(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
-  e.target.style.borderColor = "#1871bd";
-  e.target.style.boxShadow = "0 0 0 2px rgba(24,113,189,0.12)";
-}
-function handleInputBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
-  e.target.style.borderColor = "#e0e0e0";
-  e.target.style.boxShadow = "none";
-}
-
 type Props = {
   onSuccess: () => void;
 };
@@ -157,7 +132,7 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
         <button
           onClick={() => { setForm(EMPTY_FORM); setState("form"); onSuccess(); }}
           className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest t-sans-white bg-navy"
-          style={{ minHeight: "44px" }}
+          className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest t-sans-white bg-navy min-h-11"
         >
           Done
         </button>
@@ -174,8 +149,7 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-4">
       {/* Submitting as */}
-      <p className="text-xs italic opacity-60 t-serif"
-        style={{ color: "#091f2f" }}>
+      <p className="text-xs italic opacity-60 t-serif text-navy">
         Submitting as @{user.username}
       </p>
 
@@ -188,14 +162,9 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
               key={e}
               type="button"
               onClick={() => handleFieldChange({ emoji: e })}
-              className="text-xl rounded-sm transition-all duration-100"
-              style={{
-                width: "40px",
-                height: "40px",
-                border: `2px solid ${form.emoji === e ? "#1871bd" : "#e0e0e0"}`,
-                background: form.emoji === e ? "rgba(24,113,189,0.08)" : "#fff",
-                cursor: "pointer",
-              }}
+              className={`text-xl rounded-sm transition-all duration-100 emoji-btn ${
+                form.emoji === e ? "emoji-btn-active" : "emoji-btn-inactive"
+              }`}
             >
               {e}
             </button>
@@ -211,9 +180,7 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
           placeholder="e.g. Dorchester Open Studios"
           value={form.title}
           onChange={(e) => handleFieldChange({ title: e.target.value })}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-          style={inputStyle(!!errors.title)}
+          className={`submit-input ${errors.title ? "submit-input-error" : ""}`}
         />
         {errors.title && (
           <p className="text-[10px] mt-1 font-bold t-sans-red">
@@ -228,10 +195,8 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
         <select
           value={form.neighborhood}
           onChange={(e) => handleFieldChange({ neighborhood: e.target.value })}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
           aria-label="Neighborhood"
-          style={inputStyle(!!errors.neighborhood)}
+          className={`submit-input ${errors.neighborhood ? "submit-input-error" : ""}`}
         >
           <option value="">Select a neighborhood</option>
           {NEIGHBORHOODS.map((n) => (
@@ -253,9 +218,7 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
           placeholder="e.g. This Saturday · Every Sunday in April · April 12"
           value={form.dateLabel}
           onChange={(e) => handleFieldChange({ dateLabel: e.target.value })}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-          style={inputStyle(!!errors.dateLabel)}
+          className={`submit-input ${errors.dateLabel ? "submit-input-error" : ""}`}
         />
         <p className="text-[10px] mt-1 t-sans-gray">
           Write it how you&apos;d say it out loud.
@@ -275,9 +238,8 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
             type="date"
             value={form.startDate}
             onChange={(e) => handleFieldChange({ startDate: e.target.value })}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            style={inputStyle()}
+            className="submit-input"
+            aria-label="Start date"
           />
         </div>
         <div className="flex-1">
@@ -286,9 +248,8 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
             type="date"
             value={form.endDate}
             onChange={(e) => handleFieldChange({ endDate: e.target.value })}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            style={inputStyle()}
+            className="submit-input"
+            aria-label="End date"
           />
           <p className="text-[10px] mt-1 t-sans-gray">
             Event hides after this date.
@@ -303,10 +264,8 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
           placeholder="One or two sentences. What's the vibe, why should someone go."
           value={form.description}
           onChange={(e) => handleFieldChange({ description: e.target.value })}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
           rows={3}
-          style={{ ...inputStyle(!!errors.description), resize: "none", minHeight: "80px" }}
+          className={`submit-input submit-textarea ${errors.description ? "submit-input-error" : ""}`}
         />
         <div className="flex justify-between items-center mt-1">
           {errors.description ? (
@@ -314,9 +273,7 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
               {errors.description}
             </p>
           ) : <span />}
-          <span className="text-[10px] font-medium t-sans" style={{
-            color: form.description.length > 180 ? "#d22d23" : "#828282",
-          }}>
+          <span className={`text-[10px] font-medium t-sans ${form.description.length > 180 ? "text-boston-red" : "text-boston-gray-400"}`}>
             {form.description.length}/200
           </span>
         </div>
@@ -332,9 +289,7 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
           placeholder="e.g. https://sowaartsdistrict.com"
           value={form.url}
           onChange={(e) => handleFieldChange({ url: e.target.value })}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-          style={inputStyle(!!errors.url)}
+          className={`submit-input ${errors.url ? "submit-input-error" : ""}`}
         />
         {errors.url && (
           <p className="text-[10px] mt-1 font-bold t-sans-red">
@@ -352,8 +307,7 @@ export function SubmitHappeningForm({ onSuccess }: Props) {
       <button
         type="submit"
         disabled={state === "submitting"}
-        className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-colors duration-150 disabled:opacity-50 t-sans-white bg-navy"
-        style={{ minHeight: "48px" }}
+        className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-colors duration-150 disabled:opacity-50 t-sans-white bg-navy min-h-12"
       >
         {state === "submitting" ? "Adding..." : "Add to Today"}
       </button>

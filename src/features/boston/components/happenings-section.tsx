@@ -439,28 +439,20 @@ function CuratedCard({
   onNavigateToNeighborhood?: (id: string) => void;
 }) {
   return (
-    <div className="rounded-sm bg-boston-gray-50" style={{ padding: "20px", border: "1px solid #e0e0e0" }}>
-      <p className="uppercase mb-2 t-sans-blue" style={{
-        fontSize: "9px", fontWeight: "700", letterSpacing: "0.15em", lineHeight: 1,
-      }}>
+    <div className="rounded-sm bg-boston-gray-50 happening-card">
+      <p className="uppercase mb-2 t-sans-blue happening-timing">
         {happening.emoji} {happening.timing}
       </p>
-      <h3 className="font-bold leading-tight mb-2 t-sans-navy"
-        style={{ fontSize: "15px" }}>
+      <h3 className="font-bold leading-tight mb-2 t-sans-navy happening-title">
         {happening.title}
       </h3>
-      <p className="italic leading-relaxed mb-3 t-serif-body"
-        style={{ fontSize: "13px", lineHeight: "1.6" }}>
+      <p className="italic leading-relaxed mb-3 t-serif-body happening-desc">
         {happening.description}
       </p>
       {onNavigateToNeighborhood && (
         <button
           onClick={() => onNavigateToNeighborhood(happening.relatedNeighborhood)}
-          className="text-left transition-opacity duration-150 hover:opacity-70 t-sans-blue"
-          style={{
-            fontSize: "10px",
-            fontWeight: "600", letterSpacing: "0.05em", background: "none", border: "none", padding: 0, cursor: "pointer",
-          }}
+          className="text-left transition-opacity duration-150 hover:opacity-70 t-sans-blue happening-link"
         >
           📍 See spots in this neighborhood →
         </button>
@@ -471,26 +463,21 @@ function CuratedCard({
 
 function CommunityCard({ happening }: { happening: CommunityHappening }) {
   return (
-    <div className="rounded-sm bg-white" style={{ padding: "20px", border: "2px solid #e0e0e0" }}>
+    <div className="rounded-sm bg-white community-card">
       {/* Community badge + timing */}
       <div className="flex items-center justify-between mb-2">
-        <p className="uppercase t-sans-blue" style={{
-          fontSize: "9px", fontWeight: "700", letterSpacing: "0.15em", lineHeight: 1,
-        }}>
+        <p className="uppercase t-sans-blue happening-timing">
           {happening.emoji} {happening.dateLabel}
         </p>
-        <span className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-sm t-sans-blue"
-          style={{ background: "rgba(24,113,189,0.1)" }}>
+        <span className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-sm t-sans-blue region-badge">
           Community
         </span>
       </div>
 
-      <h3 className="font-bold leading-tight mb-2 t-sans-navy"
-        style={{ fontSize: "15px" }}>
+      <h3 className="font-bold leading-tight mb-2 t-sans-navy happening-title">
         {happening.title}
       </h3>
-      <p className="italic leading-relaxed mb-3 t-serif-body"
-        style={{ fontSize: "13px", lineHeight: "1.6" }}>
+      <p className="italic leading-relaxed mb-3 t-serif-body happening-desc">
         {happening.description}
       </p>
 
@@ -500,13 +487,7 @@ function CommunityCard({ happening }: { happening: CommunityHappening }) {
           href={happening.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 mb-3 transition-opacity duration-150 hover:opacity-70 t-sans-blue"
-          style={{
-            fontSize: "10px",
-            fontWeight: "600",
-            letterSpacing: "0.05em",
-            textDecoration: "none",
-          }}
+          className="inline-flex items-center gap-1 mb-3 transition-opacity duration-150 hover:opacity-70 t-sans-blue happening-ext-link"
         >
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -520,6 +501,7 @@ function CommunityCard({ happening }: { happening: CommunityHappening }) {
       {/* Submitted by */}
       <div className="flex items-center gap-2">
         {happening.submittedByPfpUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img src={happening.submittedByPfpUrl} alt={happening.submittedByDisplayName}
             loading="lazy"
             className="w-5 h-5 rounded-full object-cover shrink-0" />
@@ -545,23 +527,19 @@ export function HappeningsSection({ onNavigateToNeighborhood, communityHappening
   if (curated.length === 0 && communityHappenings.length === 0) return null;
 
   return (
-    <div className="px-4" style={{ marginTop: "24px" }}>
+    <div className="px-4 mt-6">
       <div
-        className="flex items-end justify-between pb-2"
-        style={{ borderBottom: "5px solid #091f2f", marginBottom: "12px" }}
+        className="flex items-end justify-between pb-2 section-header-divider"
       >
-        <span className="t-sans-navy" style={{
-          fontSize: "10px", fontWeight: "700",
-          textTransform: "uppercase", letterSpacing: "0.15em",
-        }}>
+        <span className="t-sans-navy section-heading">
           Happening in Boston
         </span>
-        <span className="t-sans-gray" style={{ fontSize: "9px" }}>
+        <span className="t-sans-gray section-subheading">
           {communityHappenings.length > 0 ? `${communityHappenings.length} from community` : "Curated"}
         </span>
       </div>
 
-      <div className="flex flex-col" style={{ gap: "12px" }}>
+      <div className="flex flex-col gap-3">
         {/* Community submissions first — most timely */}
         {communityHappenings.map((h) => (
           <CommunityCard key={h.id} happening={h} />

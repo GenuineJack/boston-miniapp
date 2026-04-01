@@ -42,44 +42,43 @@ export function NewsSection({ cachedNews, onNewsLoaded }: NewsSectionProps) {
 
   if (loading) {
     return (
-      <section style={{ padding: '16px 0 24px' }}>
-        <h2 className="t-serif text-[#091f2f]" style={{ fontSize: '18px', fontWeight: 700, margin: '0 16px 12px' }}>
+      <section className="news-loading-section">
+        <h2 className="t-serif text-[#091f2f] news-loading-heading">
           Boston News
         </h2>
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-boston-gray-100" style={{ height: '68px', margin: '0 0 1px' }} />
+          <div key={i} className="bg-boston-gray-100 news-skeleton" />
         ))}
       </section>
     );
   }
 
   return (
-    <section style={{ paddingBottom: '24px' }}>
-      <h2 className="t-serif text-[#091f2f]" style={{ fontSize: '18px', fontWeight: 700, margin: '16px 16px 4px' }}>
+    <section className="news-section">
+      <h2 className="t-serif text-[#091f2f] news-section-heading">
         Boston News
       </h2>
       <div>
         {items.slice(0, 8).map((item, i) => (
           <a key={i} href={item.link} target="_blank" rel="noopener noreferrer"
-            className="bg-white"
-            style={{ display: 'block', padding: '11px 16px', borderBottom: '1px solid #e5e5e5', textDecoration: 'none', color: 'inherit' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span className="t-sans" style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: item.sourceColor }}>
+            className="bg-white news-item-link no-underline text-inherit">
+            <div className="news-item-meta">
+              <span className="t-sans news-source-label" style={{ color: item.sourceColor }}>
                 {item.source}
               </span>
               {timeAgo(item.pubDate) && (
-                <span className="t-sans-gray" style={{ fontSize: '10px' }}>
+                <span className="t-sans-gray text-[10px]">
                   {timeAgo(item.pubDate)}
                 </span>
               )}
             </div>
-            <p className="t-sans-navy" style={{ margin: 0, fontSize: '13px', lineHeight: '1.4', fontWeight: 500 }}>
+            <p className="t-sans-navy news-headline">
               {item.title}
             </p>
           </a>
         ))}
       </div>
-      <p className="t-sans-gray" style={{ margin: '8px 16px 0', fontSize: '10px' }}>
+      <p className="t-sans-gray news-disclaimer">
         From Universal Hub, WBUR, and Boston Herald
       </p>
     </section>

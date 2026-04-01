@@ -73,7 +73,7 @@ function parseEspnStatus(event: Record<string, unknown>): BostonGame["status"] {
 
 function parseEspnScore(
   event: Record<string, unknown>,
-  bostonTeamId: string
+  _bostonTeamId: string
 ): { home: number; away: number } | undefined {
   try {
     const competitions = event.competitions as Record<string, unknown>[] | undefined;
@@ -224,13 +224,7 @@ export function isSportsCacheFresh(cache: SportsCache): boolean {
 function LiveDot() {
   return (
     <span
-      className="inline-block rounded-full animate-pulse shrink-0 bg-boston-red"
-      style={{
-        width: "6px",
-        height: "6px",
-        marginRight: "4px",
-        verticalAlign: "middle",
-      }}
+      className="inline-block rounded-full animate-pulse shrink-0 bg-boston-red live-dot"
     />
   );
 }
@@ -247,42 +241,23 @@ function GameCard({ game }: { game: BostonGame }) {
 
   return (
     <div
-      className="shrink-0 flex flex-col justify-between p-3 bg-white"
-      style={{
-        width: "160px",
-        border: `2px solid ${isLive ? "#1871bd" : "#e0e0e0"}`,
-        borderRadius: "3px",
-      }}
+      className={`shrink-0 flex flex-col justify-between p-3 bg-white game-card ${isLive ? "game-card-live" : ""}`}
     >
       <div>
         <p
-          className="font-bold uppercase leading-tight t-sans-navy"
-          style={{
-            fontSize: "11px",
-            marginBottom: "2px",
-          }}
+          className="font-bold uppercase leading-tight t-sans-navy game-team"
         >
           {game.emoji} {game.team}
         </p>
         <p
-          className="italic leading-snug t-serif-body"
-          style={{
-            fontSize: "13px",
-            marginBottom: "8px",
-          }}
+          className="italic leading-snug t-serif-body game-opponent"
         >
           vs {game.opponent.split(" ").slice(-1)[0]}
         </p>
       </div>
       <div>
         <p
-          className="uppercase leading-tight t-sans"
-          style={{
-            fontSize: "9px",
-            color: isLive ? "#d22d23" : "#828282",
-            fontWeight: "600",
-            letterSpacing: "0.08em",
-          }}
+          className={`uppercase leading-tight t-sans game-status ${isLive ? "text-boston-red" : "text-boston-gray-400"}`}
         >
           {isLive ? (
             <>
@@ -296,11 +271,7 @@ function GameCard({ game }: { game: BostonGame }) {
           )}
         </p>
         <p
-          className="uppercase leading-tight mt-0.5 t-sans-gray"
-          style={{
-            fontSize: "9px",
-            letterSpacing: "0.05em",
-          }}
+          className="uppercase leading-tight mt-0.5 t-sans-gray game-venue"
         >
           {game.venue.split(",")[0]}
         </p>
@@ -315,8 +286,7 @@ function SportsSkeleton() {
       {[1, 2, 3].map((i) => (
         <div
           key={i}
-          className="shrink-0 rounded animate-pulse bg-[#e0e0e0]"
-          style={{ width: 160, height: 100 }}
+          className="shrink-0 rounded animate-pulse bg-[#e0e0e0] sports-skeleton-card"
         />
       ))}
     </div>
@@ -333,28 +303,18 @@ type SportsRowProps = {
 
 export function SportsRow({ games, loading, fetchFailed }: SportsRowProps) {
   return (
-    <div className="px-4" style={{ marginTop: "24px" }}>
+    <div className="px-4 mt-6">
       {/* Section header */}
       <div
-        className="flex items-end justify-between pb-2"
-        style={{ borderBottom: "5px solid #091f2f", marginBottom: "12px" }}
+        className="flex items-end justify-between pb-2 section-header-divider"
       >
         <span
-          className="t-sans-navy"
-          style={{
-            fontSize: "10px",
-            fontWeight: "700",
-            textTransform: "uppercase",
-            letterSpacing: "0.15em",
-          }}
+          className="t-sans-navy section-heading"
         >
           Boston Sports
         </span>
         <span
-          className="t-sans-gray"
-          style={{
-            fontSize: "9px",
-          }}
+          className="t-sans-gray section-subheading"
         >
           Next 48 hrs
         </span>
@@ -364,32 +324,27 @@ export function SportsRow({ games, loading, fetchFailed }: SportsRowProps) {
         <SportsSkeleton />
       ) : fetchFailed ? (
         <div
-          className="flex items-center justify-center px-4 py-5 bg-white"
-          style={{ border: "2px solid #e0e0e0", borderRadius: "3px" }}
+          className="flex items-center justify-center px-4 py-5 bg-white box-bordered"
         >
           <p
-            className="italic text-center t-serif-gray"
-            style={{ fontSize: "13px" }}
+            className="italic text-center t-serif-gray text-[13px]"
           >
             Scores unavailable. ESPN might be having a moment.
           </p>
         </div>
       ) : games.length === 0 ? (
         <div
-          className="flex items-center justify-center px-4 py-5 bg-white"
-          style={{ border: "2px solid #e0e0e0", borderRadius: "3px" }}
+          className="flex items-center justify-center px-4 py-5 bg-white box-bordered"
         >
           <p
-            className="italic text-center t-serif-gray"
-            style={{ fontSize: "13px" }}
+            className="italic text-center t-serif-gray text-[13px]"
           >
             No games in the next 48 hours. Rest up, Boston.
           </p>
         </div>
       ) : (
         <div
-          className="flex gap-3 overflow-x-auto pb-2"
-          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+          className="flex gap-3 overflow-x-auto pb-2 no-scrollbar"
         >
           {games.map((game) => (
             <GameCard key={game.id} game={game} />

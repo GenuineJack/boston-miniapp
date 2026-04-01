@@ -64,12 +64,10 @@ export function OnboardingOverlay({ onDismiss }: { onDismiss: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center"
-      style={{ background: "rgba(9,31,47,0.92)" }}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(9,31,47,0.92)]"
     >
       <div
-        className="flex flex-col items-center text-center px-8 py-10 mx-6 rounded-sm bg-white"
-        style={{ maxWidth: "340px", width: "100%" }}
+        className="flex flex-col items-center text-center px-8 py-10 mx-6 rounded-sm bg-white max-w-[340px] w-full"
       >
         <span className="text-4xl mb-4">{current.emoji}</span>
         <h2
@@ -78,8 +76,7 @@ export function OnboardingOverlay({ onDismiss }: { onDismiss: () => void }) {
           {current.title}
         </h2>
         <p
-          className="text-sm italic leading-relaxed mb-6 t-serif-body"
-          style={{ maxWidth: "260px" }}
+          className="text-sm italic leading-relaxed mb-6 t-serif-body max-w-[260px]"
         >
           {current.desc}
         </p>
@@ -89,25 +86,16 @@ export function OnboardingOverlay({ onDismiss }: { onDismiss: () => void }) {
           {STEPS.map((_, i) => (
             <div
               key={i}
-              className="rounded-full"
-              style={{
-                width: "8px",
-                height: "8px",
-                background: i === step ? "#1871bd" : "#e0e0e0",
-                transition: "background 0.2s",
-              }}
+              className={`rounded-full w-2 h-2 transition-colors duration-200 ${
+                i === step ? "bg-boston-blue" : "bg-[#e0e0e0]"
+              }`}
             />
           ))}
         </div>
 
         <button
           onClick={handleNext}
-          className="w-full py-3 rounded-sm text-xs font-bold uppercase tracking-widest mb-2 t-sans-white bg-navy"
-          style={{
-            border: "none",
-            minHeight: "44px",
-            cursor: "pointer",
-          }}
+          className="w-full py-3 rounded-sm text-xs font-bold uppercase tracking-widest mb-2 t-sans-white bg-navy border-none min-h-11 cursor-pointer"
         >
           {step < STEPS.length - 1 ? "Next" : "Get Started"}
         </button>
@@ -115,8 +103,7 @@ export function OnboardingOverlay({ onDismiss }: { onDismiss: () => void }) {
         {step < STEPS.length - 1 && (
           <button
             onClick={handleDismiss}
-            className="text-[10px] font-bold uppercase tracking-widest t-sans-gray"
-            style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 0" }}
+            className="text-[10px] font-bold uppercase tracking-widest t-sans-gray bg-transparent border-none cursor-pointer py-2 px-0"
           >
             Skip
           </button>

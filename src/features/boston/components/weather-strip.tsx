@@ -109,27 +109,23 @@ export function WeatherStrip({ weather, loading, error, todayLabel }: WeatherStr
         <div className="flex items-center justify-between">
           <div>
             <h2
-              className="font-black uppercase tracking-tight text-white t-sans"
-              style={{ fontSize: "16px" }}
+              className="font-black uppercase tracking-tight text-white t-sans weather-title"
             >
               Today in Boston
             </h2>
             <p
-              className="italic opacity-60 text-white mt-0.5 t-serif"
-              style={{ fontSize: "11px" }}
+              className="italic opacity-60 text-white mt-0.5 t-serif weather-date"
             >
               {todayLabel}
             </p>
             <p
-              className="t-sans"
-              style={{ fontSize: "11px", color: "rgba(255,255,255,0.7)", marginTop: "2px" }}
+              className="t-sans weather-time"
             >
               {bostonTime} ET
             </p>
           </div>
           <p
-            className="italic t-serif"
-            style={{ color: "rgba(255,255,255,0.5)", fontSize: "13px" }}
+            className="italic t-serif weather-unavailable"
           >
             Weather unavailable
           </p>
@@ -139,20 +135,17 @@ export function WeatherStrip({ weather, loading, error, todayLabel }: WeatherStr
           {/* Left: title + date */}
           <div className="min-w-0">
             <h2
-              className="font-black uppercase tracking-tight text-white leading-none t-sans"
-              style={{ fontSize: "15px" }}
+              className="font-black uppercase tracking-tight text-white leading-none t-sans weather-title-sm"
             >
               Today in Boston
             </h2>
             <p
-              className="italic text-white mt-0.5 leading-none t-serif"
-              style={{ fontSize: "10px", opacity: 0.6 }}
+              className="italic text-white mt-0.5 leading-none t-serif weather-date-sm"
             >
               {todayLabel}
             </p>
             <p
-              className="t-sans"
-              style={{ fontSize: "11px", color: "rgba(255,255,255,0.7)", marginTop: "3px", lineHeight: 1 }}
+              className="t-sans weather-time-sm"
             >
               {bostonTime} ET
             </p>
@@ -164,36 +157,18 @@ export function WeatherStrip({ weather, loading, error, todayLabel }: WeatherStr
             <div className="text-right">
               <div className="flex items-baseline gap-1.5 justify-end">
                 <span
-                  className="t-sans-white"
-                  style={{
-                    fontSize: "22px",
-                    fontWeight: "700",
-                    lineHeight: 1,
-                  }}
+                  className="t-sans-white weather-temp"
                 >
                   {weather.tempF}°F
                 </span>
               </div>
               <p
-                className="italic t-serif"
-                style={{
-                  fontSize: "11px",
-                  color: "rgba(255,255,255,0.75)",
-                  lineHeight: 1.2,
-                }}
+                className="italic t-serif weather-condition"
               >
                 {weather.condition}
               </p>
               <p
-                className="t-sans"
-                style={{
-                  fontSize: "9px",
-                  fontWeight: "600",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  color: "rgba(255,255,255,0.5)",
-                  lineHeight: 1.3,
-                }}
+                className="t-sans weather-hilo"
               >
                 H:{weather.highF}° L:{weather.lowF}°
               </p>

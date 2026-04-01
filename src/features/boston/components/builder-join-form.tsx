@@ -26,28 +26,6 @@ type JoinFormProps = {
 
 type FormState = "form" | "submitting" | "success";
 
-// Shared input style helper
-const inputStyle: React.CSSProperties = {
-  fontSize: "13px",
-  color: "#091f2f",
-  background: "#fff",
-  border: "2px solid #e0e0e0",
-  borderRadius: "3px",
-  padding: "10px 12px",
-  width: "100%",
-  outline: "none",
-  boxSizing: "border-box",
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: "10px",
-  fontWeight: "700",
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.12em",
-  display: "block",
-  marginBottom: "6px",
-};
-
 function InputField({
   label,
   value,
@@ -67,20 +45,17 @@ function InputField({
 }) {
   return (
     <div>
-      <label className="t-sans-navy" style={labelStyle}>{label}</label>
+      <label className="t-sans-navy form-label">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={maxLength}
-        className="t-serif"
-        style={inputStyle}
-        onFocus={(e) => { e.target.style.boxShadow = "0 0 0 3px rgba(24,113,189,0.25)"; e.target.style.borderColor = "#1871bd"; }}
-        onBlur={(e) => { e.target.style.boxShadow = "none"; e.target.style.borderColor = "#e0e0e0"; }}
+        className="t-serif form-input"
       />
       {hint && (
-        <p className="t-serif-gray" style={{ fontSize: "11px", marginTop: "4px", fontStyle: "italic" }}>
+        <p className="t-serif-gray form-hint">
           {hint}
         </p>
       )}
@@ -121,7 +96,7 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-        <p className="t-serif-body" style={{ fontSize: "14px", fontStyle: "italic" }}>
+        <p className="t-serif-body text-sm italic">
           Sign in with Farcaster to join the directory.
         </p>
       </div>
@@ -219,6 +194,7 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
       <div className="flex flex-col items-center justify-center min-h-full px-6 py-12 text-center gap-6">
         {/* Avatar */}
         {user.pfpUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={user.pfpUrl}
             alt={user.displayName ?? user.username}
@@ -246,21 +222,15 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
         </div>
 
         <p
-          className="text-sm italic leading-relaxed t-serif-body"
-          style={{ maxWidth: "260px" }}
+          className="text-sm italic leading-relaxed t-serif-body max-w-[260px]"
         >
           You&apos;re in the /boston builder directory.
         </p>
 
-        <div className="flex flex-col gap-3 w-full" style={{ maxWidth: "300px" }}>
+        <div className="flex flex-col gap-3 w-full max-w-[300px]">
           <button
             onClick={handleShareToFarcaster}
-            className="w-full py-3 rounded-sm text-xs font-bold uppercase tracking-widest transition-opacity duration-150 hover:opacity-90 focus:outline-none t-sans-white bg-boston-blue"
-            style={{
-              border: "none",
-              minHeight: "44px",
-              cursor: "pointer",
-            }}
+            className="w-full py-3 rounded-sm text-xs font-bold uppercase tracking-widest transition-opacity duration-150 hover:opacity-90 focus:outline-none t-sans-white bg-boston-blue btn-form-primary"
           >
             Share to /boston
           </button>
@@ -271,13 +241,7 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
               onSuccess();
               onClose();
             }}
-            className="w-full py-3 rounded-sm text-xs font-bold uppercase tracking-widest transition-colors duration-150 focus:outline-none t-sans-navy"
-            style={{
-              background: "transparent",
-              border: "2px solid #091f2f",
-              minHeight: "44px",
-              cursor: "pointer",
-            }}
+            className="w-full py-3 rounded-sm text-xs font-bold uppercase tracking-widest transition-colors duration-150 focus:outline-none t-sans-navy btn-form-outline"
           >
             View Directory
           </button>
@@ -291,10 +255,10 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
       <div className="flex flex-col gap-5 p-5">
         {/* Identity card — non-editable */}
         <div
-          className="flex items-center gap-3 p-3 rounded-sm bg-boston-gray-50"
-          style={{ border: "1px solid #e0e0e0" }}
+          className="flex items-center gap-3 p-3 rounded-sm bg-boston-gray-50 identity-card"
         >
           {user.pfpUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={user.pfpUrl}
               alt={user.displayName ?? user.username}
@@ -337,25 +301,22 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
 
         {/* Project links — up to 3 */}
         <div>
-          <label className="t-sans-navy" style={labelStyle}>Project links</label>
+          <label className="t-sans-navy form-label">Project links</label>
           {projectLinks.map((link, i) => (
             <div key={i} className="flex items-center gap-2 mb-2">
               <input
                 type="url"
                 value={link}
                 onChange={(e) => handleLinkChange(i, e.target.value)}
-                onBlur={(e) => { handleLinkBlur(i); e.target.style.boxShadow = "none"; e.target.style.borderColor = "#e0e0e0"; }}
+                onBlur={() => { handleLinkBlur(i); }}
                 placeholder="https://"
-                className="t-serif"
-                style={{ ...inputStyle, flex: 1 }}
-                onFocus={(e) => { e.target.style.boxShadow = "0 0 0 3px rgba(24,113,189,0.25)"; e.target.style.borderColor = "#1871bd"; }}
+                className="t-serif form-input flex-1"
               />
               {projectLinks.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removeLink(i)}
-                  className="text-boston-gray-400"
-                  style={{ background: "none", border: "none", cursor: "pointer", fontSize: "16px", padding: "4px" }}
+                  className="text-boston-gray-400 btn-remove"
                   aria-label="Remove link"
                 >
                   ✕
@@ -367,8 +328,7 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
             <button
               type="button"
               onClick={addLink}
-              className="text-[10px] font-bold uppercase tracking-widest t-sans-blue"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+              className="text-[10px] font-bold uppercase tracking-widest t-sans-blue btn-unstyled"
             >
               + Add another link
             </button>
@@ -377,25 +337,14 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
 
         {/* Neighborhood */}
         <div>
-          <label className="t-sans-navy" style={labelStyle}>
+          <label className="t-sans-navy form-label">
             Your neighborhood <span className="text-boston-blue">*</span>
           </label>
           <select
             value={neighborhood}
             onChange={(e) => setNeighborhood(e.target.value)}
             aria-label="Your neighborhood"
-            className="t-sans"
-            style={{
-              ...inputStyle,
-              fontSize: "11px",
-              appearance: "none",
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23828282' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "right 12px center",
-              paddingRight: "32px",
-            }}
-            onFocus={(e) => { e.target.style.boxShadow = "0 0 0 3px rgba(24,113,189,0.25)"; e.target.style.borderColor = "#1871bd"; }}
-            onBlur={(e) => { e.target.style.boxShadow = "none"; e.target.style.borderColor = "#e0e0e0"; }}
+            className="t-sans form-select"
           >
             <option value="">Select a neighborhood</option>
             <optgroup label="Boston Neighborhoods">
@@ -413,9 +362,9 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
 
         {/* Builder category — multi-select chips (up to 3) */}
         <div>
-          <label className="t-sans-navy" style={labelStyle}>
+          <label className="t-sans-navy form-label">
             What kind of builder? <span className="text-boston-blue">*</span>
-            <span className="text-boston-gray-400" style={{ fontWeight: "400", marginLeft: 4 }}>(up to {MAX_CATEGORIES})</span>
+            <span className="text-boston-gray-400 font-normal ml-1">(up to {MAX_CATEGORIES})</span>
           </label>
           <div className="flex flex-wrap gap-2">
             {BUILDER_CATEGORIES.map((cat) => {
@@ -427,15 +376,13 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
                   type="button"
                   onClick={() => toggleCategory(cat)}
                   disabled={isDisabled}
-                  className="inline-flex items-center gap-1 px-3 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-colors duration-150 focus:outline-none t-sans"
-                  style={{
-                    background: isSelected ? "#091f2f" : "transparent",
-                    color: isSelected ? "#fff" : isDisabled ? "#c0c0c0" : "#091f2f",
-                    border: `1px solid ${isSelected ? "#091f2f" : "#c0c0c0"}`,
-                    minHeight: "34px",
-                    cursor: isDisabled ? "not-allowed" : "pointer",
-                    opacity: isDisabled ? 0.5 : 1,
-                  }}
+                  className={`inline-flex items-center gap-1 px-3 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-colors duration-150 focus:outline-none t-sans min-h-[34px] ${
+                    isSelected
+                      ? "bg-navy text-white border border-navy"
+                      : isDisabled
+                        ? "bg-transparent text-[#c0c0c0] border border-[#c0c0c0] cursor-not-allowed opacity-50"
+                        : "bg-transparent text-navy border border-[#c0c0c0] cursor-pointer"
+                  }`}
                 >
                   {BUILDER_CATEGORY_ICONS[cat]} {cat}
                 </button>
@@ -446,28 +393,18 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
 
         {/* Bio — expanded to 300 chars */}
         <div>
-          <label className="t-sans-navy" style={labelStyle}>One-liner about you</label>
-          <div style={{ position: "relative" }}>
+          <label className="t-sans-navy form-label">One-liner about you</label>
+          <div className="relative">
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value.slice(0, 300))}
               placeholder="What are you working on? Be specific. 300 chars max."
               maxLength={300}
               rows={3}
-              className="t-serif"
-              style={{ ...inputStyle, paddingRight: "40px", resize: "none", minHeight: "80px" }}
-              onFocus={(e) => { e.target.style.boxShadow = "0 0 0 3px rgba(24,113,189,0.25)"; e.target.style.borderColor = "#1871bd"; }}
-              onBlur={(e) => { e.target.style.boxShadow = "none"; e.target.style.borderColor = "#e0e0e0"; }}
+              className="t-serif form-input form-input-with-counter resize-none min-h-20"
             />
             <span
-              className="t-sans"
-              style={{
-                position: "absolute",
-                right: "10px",
-                bottom: "10px",
-                fontSize: "9px",
-                color: bio.length >= 280 ? "#1871bd" : "#c0c0c0",
-              }}
+              className={`t-sans form-char-counter ${bio.length >= 280 ? "text-boston-blue" : "text-[#c0c0c0]"}`}
             >
               {bio.length}/300
             </span>
@@ -476,28 +413,18 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
 
         {/* Talk about */}
         <div>
-          <label className="t-sans-navy" style={labelStyle}>Talk to me about</label>
-          <div style={{ position: "relative" }}>
+          <label className="t-sans-navy form-label">Talk to me about</label>
+          <div className="relative">
             <input
               type="text"
               value={talkAbout}
               onChange={(e) => setTalkAbout(e.target.value.slice(0, 120))}
               placeholder="e.g. Solidity, community events, design..."
               maxLength={120}
-              className="t-serif"
-              style={{ ...inputStyle, paddingRight: "40px" }}
-              onFocus={(e) => { e.target.style.boxShadow = "0 0 0 3px rgba(24,113,189,0.25)"; e.target.style.borderColor = "#1871bd"; }}
-              onBlur={(e) => { e.target.style.boxShadow = "none"; e.target.style.borderColor = "#e0e0e0"; }}
+              className="t-serif form-input form-input-with-counter"
             />
             <span
-              className="t-sans"
-              style={{
-                position: "absolute",
-                right: "10px",
-                bottom: "10px",
-                fontSize: "9px",
-                color: talkAbout.length >= 110 ? "#1871bd" : "#c0c0c0",
-              }}
+              className={`t-sans form-char-counter ${talkAbout.length >= 110 ? "text-boston-blue" : "text-[#c0c0c0]"}`}
             >
               {talkAbout.length}/120
             </span>
@@ -507,13 +434,7 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
         {/* Error */}
         {error && (
           <p
-            className="text-xs px-3 py-2 rounded-sm t-serif"
-            style={{
-              fontStyle: "italic",
-              color: "#c0392b",
-              background: "rgba(192,57,43,0.08)",
-              border: "1px solid rgba(192,57,43,0.2)",
-            }}
+            className="text-xs px-3 py-2 rounded-sm t-serif form-error"
           >
             {error}
           </p>
@@ -523,13 +444,7 @@ export function BuilderJoinForm({ onSuccess, onClose, existingBuilder }: JoinFor
         <button
           onClick={handleSubmit}
           disabled={formState === "submitting"}
-          className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-opacity duration-150 focus:outline-none t-sans-white bg-navy"
-          style={{
-            border: "none",
-            minHeight: "48px",
-            cursor: formState === "submitting" ? "not-allowed" : "pointer",
-            opacity: formState === "submitting" ? 0.6 : 1,
-          }}
+          className="w-full py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-opacity duration-150 focus:outline-none t-sans-white bg-navy btn-form-submit"
         >
           {formState === "submitting" ? (isEditing ? "Saving..." : "Joining...") : isEditing ? "Save Changes" : "Join the Directory"}
         </button>

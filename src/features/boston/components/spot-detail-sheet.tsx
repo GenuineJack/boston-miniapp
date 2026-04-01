@@ -108,9 +108,8 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
       {/* Sheet */}
       <div
         ref={sheetRef}
-        className="fixed bottom-0 left-0 right-0 z-50 rounded-t-lg overflow-hidden bg-white"
+        className="fixed bottom-0 left-0 right-0 z-50 rounded-t-lg overflow-hidden bg-white max-h-[70vh]"
         style={{
-          maxHeight: "70vh",
           transform: `translateY(${isAnimatingOut ? "100%" : `${translateY}px`})`,
           transition: isAnimatingOut
             ? "transform 0.2s ease-in"
@@ -130,8 +129,7 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
         </div>
 
         <div
-          className="px-4 pb-6 overflow-y-auto"
-          style={{ maxHeight: "calc(70vh - 40px)" }}
+          className="px-4 pb-6 overflow-y-auto max-h-[calc(70vh-40px)]"
           onTouchStart={(e) => {
             // Only start a drag-to-dismiss if content is scrolled to top
             const el = e.currentTarget;
@@ -152,8 +150,7 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
             </span>
             {spot.featured && (
               <span
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans-navy"
-                style={{ background: "#fcb61a" }}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans-navy bg-boston-yellow"
               >
                 ★ Staff Pick
               </span>
@@ -182,11 +179,10 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
                 onViewBuilder(spot.submittedByFid);
               }
             }}
-            role={onViewBuilder ? "button" : undefined}
-            tabIndex={onViewBuilder ? 0 : undefined}
-            onKeyDown={onViewBuilder ? (e) => { if (e.key === "Enter" || e.key === " ") onViewBuilder(spot.submittedByFid); } : undefined}
+            {...(onViewBuilder ? { role: "button" as const, tabIndex: 0, onKeyDown: (e: React.KeyboardEvent) => { if (e.key === "Enter" || e.key === " ") onViewBuilder(spot.submittedByFid); } } : {})}
           >
             {spot.submittedByPfpUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={spot.submittedByPfpUrl}
                 alt={spot.submittedByDisplayName}
@@ -219,7 +215,7 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
                 📍 {spot.neighborhood}
               </p>
               {onViewBuilder && (
-                <span style={{ color: "#c0c0c0", fontSize: "12px" }}>›</span>
+                <span className="chevron-sep">›</span>
               )}
             </div>
           </div>
@@ -249,21 +245,13 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
           <div className="flex gap-3 mb-2">
             <button
               onClick={handleOpenMaps}
-              className="flex-1 py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-colors duration-150 t-sans-white bg-boston-blue"
-              style={{
-                minHeight: "44px",
-              }}
+              className="flex-1 py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-colors duration-150 t-sans-white bg-boston-blue min-h-11"
             >
               Open in Maps
             </button>
             <button
               onClick={handleShare}
-              className="flex-1 py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-colors duration-150 t-sans-white bg-navy"
-              style={{
-                minHeight: "44px",
-                border: "none",
-                cursor: "pointer",
-              }}
+              className="flex-1 py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-colors duration-150 t-sans-white bg-navy border-none cursor-pointer min-h-11"
             >
               Share
             </button>
@@ -273,12 +261,7 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
               href={spot.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center py-3 rounded-sm text-sm font-bold uppercase tracking-widest border-2 border-[#1871bd] transition-colors duration-150 mb-2 t-sans-blue"
-              style={{
-                minHeight: "44px",
-                textDecoration: "none",
-                width: "100%",
-              }}
+              className="flex items-center justify-center py-3 rounded-sm text-sm font-bold uppercase tracking-widest border-2 border-[#1871bd] transition-colors duration-150 mb-2 t-sans-blue min-h-11 no-underline w-full"
             >
               Website
             </a>
@@ -286,11 +269,7 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
           {/* Secondary close action — less visual weight */}
           <button
             onClick={handleClose}
-            className="w-full py-2.5 rounded-sm text-xs font-bold uppercase tracking-widest border border-[#e0e0e0] transition-colors duration-150 hover:border-[#091f2f] t-sans-gray"
-            style={{
-              background: "transparent",
-              minHeight: "40px",
-            }}
+            className="w-full py-2.5 rounded-sm text-xs font-bold uppercase tracking-widest border border-[#e0e0e0] transition-colors duration-150 hover:border-[#091f2f] t-sans-gray bg-transparent min-h-10"
           >
             Close
           </button>

@@ -20,7 +20,7 @@ function getPinColor(spot: Spot): string {
 }
 
 // Build a circle SVG marker icon
-function buildIcon(L: typeof import("leaflet"), color: string) {
+function _buildIcon(L: typeof import("leaflet"), color: string) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">
     <circle cx="11" cy="11" r="9" fill="${color}" opacity="0.9" stroke="white" stroke-width="2"/>
     <circle cx="11" cy="11" r="4" fill="white"/>

@@ -77,20 +77,24 @@
 
 /* Hide scrollbar while keeping scroll functionality */
 .no-scrollbar {
-  scrollbar-width: none;
   -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+  width: 0;
+  height: 0;
 }
 
 /* Also alias for components using scrollbar-hide (Tailwind plugin convention) */
 .scrollbar-hide {
-  scrollbar-width: none;
   -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+  width: 0;
+  height: 0;
 }
 
 /* ============================================
@@ -145,7 +149,899 @@
 
 /* Dark backgrounds — white ring instead */
 .bg-\[\#091f2f\] *:focus-visible,
-[style*="background: #091f2f"] *:focus-visible,
-[style*="background:#091f2f"] *:focus-visible {
+.bg-navy *:focus-visible,
+.nav-bottom *:focus-visible {
   outline-color: rgba(255, 255, 255, 0.7);
+}
+
+/* ============================================
+   COMPONENT UTILITY CLASSES
+   Move inline styles to CSS for cleaner JSX.
+   ============================================ */
+
+/* Header "+ ADD" button */
+.btn-add-header {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #1871bd;
+  background: transparent;
+  border: 1px solid #1871bd;
+  border-radius: 2px;
+  padding: 4px 12px;
+  height: 28px;
+  cursor: pointer;
+  line-height: 1;
+}
+.btn-add-header:hover {
+  background: #1871bd;
+  color: #fff;
+}
+
+/* Overlay back button */
+.btn-overlay-back {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Overlay header label */
+.overlay-header-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.5);
+}
+
+/* Picker card button */
+.btn-picker-card {
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  cursor: pointer;
+}
+.btn-picker-card:hover {
+  border-color: #1871bd;
+}
+
+/* Bottom navigation bar */
+.nav-bottom {
+  background: #091f2f;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+}
+
+/* Tab button base */
+.tab-btn {
+  min-height: 64px;
+}
+
+/* Center tab circle */
+.tab-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.tab-circle-active {
+  background: #1871bd;
+}
+.tab-circle-inactive {
+  background: rgba(24, 113, 189, 0.15);
+}
+
+/* Active tab indicator line */
+.tab-indicator {
+  width: 60%;
+  height: 3px;
+  background: #1871bd;
+  border-radius: 0 0 2px 2px;
+}
+
+/* Tab label colors */
+.tab-label-active {
+  color: #1871bd;
+}
+.tab-label-inactive {
+  color: rgba(255,255,255,0.45);
+}
+
+/* Builder card wrapper */
+.card-builder {
+  border: 2px solid #e0e0e0;
+  border-radius: 3px;
+  padding: 16px;
+  transition: border-color 0.15s;
+}
+.card-builder:hover {
+  border-color: #1871bd;
+}
+
+/* Featured builder card wrapper */
+.card-featured-builder {
+  border-radius: 3px;
+  padding: 20px;
+}
+
+/* Verified badge */
+.badge-verified {
+  font-size: 7px;
+  font-weight: 900;
+}
+
+/* Builder stats footer */
+.stats-divider {
+  border-top: 1px solid #e0e0e0;
+}
+.stats-divider-dark {
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Dot separator */
+.dot-sep {
+  color: #c0c0c0;
+  font-size: 10px;
+}
+.dot-sep-dark {
+  color: rgba(255,255,255,0.2);
+  font-size: 10px;
+}
+
+/* Identity card border */
+.border-identity {
+  border: 1px solid #e0e0e0;
+}
+
+/* Spot detail overlay */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+.sheet-backdrop {
+  background: rgba(0,0,0,0.5);
+}
+.sheet-panel {
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  max-height: 85dvh;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+
+/* Spot detail chevron separator */
+.chevron-sep {
+  color: #c0c0c0;
+  font-size: 12px;
+}
+
+/* Builder detail sheet panel */
+.builder-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+.builder-sheet-panel {
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  max-height: 80dvh;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+
+/* Link button base */
+.btn-link-base {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Action button underline style */
+.btn-action-outline {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+  padding: 6px 0;
+  cursor: pointer;
+}
+.btn-action-outline:hover {
+  border-color: #1871bd;
+}
+
+/* External link button variant */
+.btn-action-blue-outline {
+  background: transparent;
+  border: 1px solid #1871bd;
+  border-radius: 2px;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+/* Share/close button in detail sheets */
+.btn-detail-action {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+/* News section */
+.news-section {
+  padding-bottom: 24px;
+}
+.news-section-heading {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 16px 16px 4px;
+}
+.news-item-link {
+  display: block;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.news-item-link:hover {
+  background: #f8f8f8;
+}
+.news-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.news-source-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.news-headline {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+.news-disclaimer {
+  margin: 8px 16px 0;
+  font-size: 10px;
+}
+.news-skeleton {
+  height: 68px;
+  margin: 0 0 1px;
+}
+.news-loading-heading {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 16px 12px;
+}
+.news-loading-section {
+  padding: 16px 0 24px;
+}
+
+/* Onboarding overlay */
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0,0,0,0.65);
+}
+.onboarding-card {
+  background: #fff;
+  border-radius: 4px;
+  padding: 24px 20px 20px;
+  max-width: 320px;
+  width: calc(100% - 48px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  text-align: center;
+}
+.onboarding-step-indicator {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+.onboarding-btn-start {
+  background: #091f2f;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 12px 24px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  width: 100%;
+}
+.onboarding-btn-start:hover {
+  background: #1871bd;
+}
+.onboarding-btn-skip {
+  background: none;
+  border: none;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #828282;
+  cursor: pointer;
+  padding: 8px 0;
+}
+.onboarding-btn-skip:hover {
+  color: #091f2f;
+}
+
+/* Explore tab */
+.search-input {
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 2px;
+  padding: 10px 12px 10px 36px;
+  font-size: 13px;
+  outline: none;
+}
+.search-input:focus {
+  border-color: #1871bd;
+}
+
+/* Map toggle button */
+.btn-map-toggle {
+  background: #091f2f;
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  padding: 8px 14px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+.btn-map-toggle:hover {
+  background: #1871bd;
+}
+
+/* Skeleton pulse placeholder */
+.skeleton-h-96 {
+  height: 96px;
+}
+.skeleton-h-80 {
+  height: 80px;
+}
+.skeleton-h-68 {
+  height: 68px;
+}
+.skeleton-h-48 {
+  height: 48px;
+}
+
+/* Neighborhood buttons */
+.btn-neighborhood {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.btn-neighborhood:hover {
+  border-color: #1871bd;
+}
+
+/* Back button (neighborhoods) */
+.btn-back-nav {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  color: #1871bd;
+}
+.btn-back-nav:hover {
+  opacity: 0.7;
+}
+
+/* Neighborhood card */
+.btn-neighborhood-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.btn-neighborhood-card:hover {
+  border-color: #1871bd;
+}
+
+/* Builder filter bar */
+.filter-bar {
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 16px;
+}
+
+/* Builders tab heading */
+.builders-heading {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* ── Filter select dropdown ── */
+.select-filter {
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  padding: 6px 8px;
+  height: 30px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23828282' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+}
+
+/* ── Category filter button ── */
+.cat-filter-btn {
+  min-height: 28px;
+  border: 2px solid #091f2f;
+}
+
+/* ── Builder join form ── */
+.form-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  font-size: 13px;
+  color: #091f2f;
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 3px;
+  padding: 10px 12px;
+  width: 100%;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  box-shadow: 0 0 0 3px rgba(24, 113, 189, 0.25);
+  border-color: #1871bd;
+}
+
+.form-input-with-counter {
+  padding-right: 40px;
+}
+
+.form-hint {
+  font-size: 11px;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.form-select {
+  font-size: 11px;
+  color: #091f2f;
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 3px;
+  padding: 10px 12px;
+  width: 100%;
+  outline: none;
+  box-sizing: border-box;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23828282' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.form-select:focus {
+  box-shadow: 0 0 0 3px rgba(24, 113, 189, 0.25);
+  border-color: #1871bd;
+}
+
+.form-char-counter {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 9px;
+}
+
+.form-error {
+  font-style: italic;
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.2);
+}
+
+.btn-form-submit {
+  border: none;
+  min-height: 48px;
+}
+
+.btn-form-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-form-primary {
+  border: none;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.btn-form-outline {
+  background: transparent;
+  border: 2px solid #091f2f;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.btn-unstyled {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+}
+
+.identity-card {
+  border: 1px solid #e0e0e0;
+}
+
+/* ── Explore tab ── */
+.map-container {
+  height: clamp(180px, 30vh, 240px);
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
+.map-container-collapsed {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
+
+.btn-show-map {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border: none;
+  cursor: pointer;
+}
+
+.explore-search-input {
+  font-size: 12px;
+  border-radius: 3px;
+  height: 36px;
+  padding-left: 36px;
+}
+.explore-search-input:focus {
+  border-color: #1871bd;
+  box-shadow: 0 0 0 3px rgba(24, 113, 189, 0.15);
+}
+
+.btn-clear-search {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* ── Neighborhoods tab ── */
+.region-divider-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.region-card {
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #1871bd;
+}
+
+.region-badge {
+  background: rgba(24, 113, 189, 0.1);
+}
+
+.spot-list-btn {
+  border: 1px solid #e0e0e0;
+}
+
+/* ── Builders tab ── */
+.btn-join-banner {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #1871bd;
+  background: transparent;
+  border: 1px solid #1871bd;
+  border-radius: 2px;
+  padding: 4px 12px;
+  height: 28px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-join-banner:hover {
+  background: #1871bd;
+  color: #fff;
+}
+
+.builders-overlay-back {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.builders-overlay-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Submit form inputs ── */
+.submit-input {
+  font-family: var(--font-sans);
+  background: #fff;
+  color: #091f2f;
+  border: 2px solid #e0e0e0;
+  border-radius: 3px;
+  padding: 10px 12px;
+  font-size: 13px;
+  width: 100%;
+  outline: none;
+  min-height: 44px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.submit-input:focus {
+  border-color: #1871bd;
+  box-shadow: 0 0 0 2px rgba(24, 113, 189, 0.12);
+}
+.submit-input-error {
+  border-color: #d22d23;
+}
+
+.submit-textarea {
+  resize: none;
+  min-height: 80px;
+}
+
+.submit-error-box {
+  background: rgba(210, 45, 35, 0.08);
+  border: 1px solid rgba(210, 45, 35, 0.2);
+}
+
+/* ── Weather strip ── */
+.weather-title {
+  font-size: 16px;
+}
+.weather-title-sm {
+  font-size: 15px;
+}
+.weather-date {
+  font-size: 11px;
+}
+.weather-date-sm {
+  font-size: 10px;
+  opacity: 0.6;
+}
+.weather-time {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+}
+.weather-time-sm {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 3px;
+  line-height: 1;
+}
+.weather-unavailable {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+}
+.weather-temp {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+.weather-condition {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.2;
+}
+.weather-hilo {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.3;
+}
+
+/* ── Sports row ── */
+.live-dot {
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.game-card {
+  width: 160px;
+  border: 2px solid #e0e0e0;
+  border-radius: 3px;
+}
+.game-card-live {
+  border-color: #1871bd;
+}
+.game-team {
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+.game-opponent {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.game-status {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.game-venue {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+}
+
+/* ── Whats new tab ── */
+.seasonal-label {
+  color: #fcb61a;
+}
+
+/* ── Emoji picker ── */
+.emoji-btn {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+.emoji-btn-active {
+  border: 2px solid #1871bd;
+  background: rgba(24, 113, 189, 0.08);
+}
+.emoji-btn-inactive {
+  border: 2px solid #e0e0e0;
+  background: #fff;
+}
+
+/* ── Section header divider (sports + happenings) ── */
+.section-header-divider {
+  border-bottom: 5px solid #091f2f;
+  margin-bottom: 12px;
+}
+
+.section-heading {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.section-subheading {
+  font-size: 9px;
+}
+
+/* ── Sports skeleton ── */
+.sports-skeleton-card {
+  width: 160px;
+  height: 100px;
+}
+
+/* ── Box with border (reusable) ── */
+.box-bordered {
+  border: 2px solid #e0e0e0;
+  border-radius: 3px;
+}
+
+.box-bordered-thin {
+  border: 1px solid #e0e0e0;
+}
+
+/* ── Happenings ── */
+.happening-card {
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+}
+
+.community-card {
+  padding: 20px;
+  border: 2px solid #e0e0e0;
+}
+
+.happening-timing {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  line-height: 1;
+}
+
+.happening-title {
+  font-size: 15px;
+}
+
+.happening-desc {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.happening-link {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.happening-ext-link {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+}
+
+/* ── Map ── */
+.map-skeleton {
+  height: clamp(180px, 30vh, 240px);
+  background: #0d1b2a;
+  position: relative;
+}
+
+.map-badge-border {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ── Admin panel ── */
+.admin-error-badge {
+  background: rgba(210, 45, 35, 0.1);
+}
+
+.admin-pre {
+  border-radius: 2px;
+  color: #58585b;
+}
+
+/* ── Sketch layout SVG filter ── */
+.sketch-filter {
+  filter: url(#sketchy);
 }

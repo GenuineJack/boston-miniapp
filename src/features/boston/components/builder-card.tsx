@@ -14,6 +14,7 @@ function BuilderAvatar({ builder, size = 48 }: { builder: Builder; size?: number
 
   if (builder.avatarUrl) {
     return (
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={builder.avatarUrl}
         alt={builder.displayName}
@@ -50,13 +51,9 @@ export function BuilderCard({ builder, onClick, onSpotFilterClick }: BuilderCard
   return (
     <div
       onClick={() => onClick?.(builder)}
-      role="button"
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick?.(builder); }}
-      className="w-full text-left rounded-sm bg-white cursor-pointer focus:outline-none group"
-      style={{ border: "2px solid #e0e0e0", borderRadius: "3px", padding: "16px", transition: "border-color 0.15s" }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#1871bd"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e0e0e0"; }}
+      className="w-full text-left rounded-sm bg-white cursor-pointer focus:outline-none group card-builder"
     >
       {/* Top row: avatar + identity + category pill */}
       <div className="flex items-start gap-3 mb-3">
@@ -72,8 +69,7 @@ export function BuilderCard({ builder, onClick, onSpotFilterClick }: BuilderCard
             </span>
             {builder.verified && (
               <span
-                className="inline-flex items-center justify-center w-3 h-3 rounded-full text-white shrink-0 bg-boston-blue"
-                style={{ fontSize: "7px", fontWeight: "900" }}
+                className="inline-flex items-center justify-center w-3 h-3 rounded-full text-white shrink-0 bg-boston-blue badge-verified"
                 aria-label="Verified"
               >
                 ✓
@@ -149,27 +145,19 @@ export function BuilderCard({ builder, onClick, onSpotFilterClick }: BuilderCard
 
       {/* Stats footer */}
       <div
-        className="flex items-center gap-2 pt-3"
-        style={{ borderTop: "1px solid #e0e0e0" }}
+        className="flex items-center gap-2 pt-3 stats-divider"
       >
         <button
           onClick={(e) => {
             e.stopPropagation();
             if (spotCount > 0) onSpotFilterClick?.(builder.fid, builder.username);
           }}
-          className="text-[10px] font-medium leading-none focus:outline-none t-sans"
-          style={{
-            color: spotCount > 0 ? "#1871bd" : "#828282",
-            background: "none",
-            border: "none",
-            padding: 0,
-            cursor: spotCount > 0 ? "pointer" : "default",
-          }}
+          className={`text-[10px] font-medium leading-none focus:outline-none t-sans btn-link-base ${spotCount > 0 ? "text-boston-blue cursor-pointer" : "text-boston-gray-400 cursor-default"}`}
         >
           {spotCount > 0 ? `🗺 ${spotCount} spot${spotCount === 1 ? "" : "s"} in the guide` : "🗺 No spots yet"}
         </button>
 
-        <span style={{ color: "#c0c0c0", fontSize: "10px" }}>·</span>
+        <span className="dot-sep">·</span>
 
         <span
           className="text-[10px] leading-none t-sans-gray"

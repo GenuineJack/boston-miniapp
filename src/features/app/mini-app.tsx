@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ActiveTab, Spot, CategoryFilter } from "@/features/boston/types";
 import { ExploreTab } from "@/features/boston/tabs/explore-tab";
 import { NeighborhoodsTab } from "@/features/boston/tabs/neighborhoods-tab";
@@ -16,7 +16,6 @@ import type { Builder } from "@/features/boston/types";
 import type { WeatherCache } from "@/features/boston/components/weather-strip";
 import type { SportsCache } from "@/features/boston/components/sports-row";
 import type { NewsItem } from "@/app/api/news/route";
-import { useEffect } from "react";
 
 type SubmitMode = "picker" | "spot" | "happening";
 
@@ -118,14 +117,12 @@ export function MiniApp() {
       >
         <div>
           <span
-            className="font-black uppercase tracking-tight leading-none block t-sans-white"
-            style={{ fontSize: "15px" }}
+            className="font-black uppercase tracking-tight leading-none block t-sans-white text-[15px]"
           >
             The Boston Miniapp
           </span>
           <span
-            className="leading-none block mt-0.5 t-serif-white"
-            style={{ fontSize: "10px", fontStyle: "italic", opacity: 0.6 }}
+            className="leading-none block mt-0.5 t-serif-white text-[10px] italic opacity-60"
           >
             curated by the people who live here
           </span>
@@ -134,30 +131,8 @@ export function MiniApp() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => { setSubmitMode("picker"); setShowSubmitOverlay(true); }}
-            className="transition-colors duration-150 t-sans"
+            className="transition-colors duration-150 t-sans btn-add-header"
             aria-label="Add a spot or event"
-            style={{
-              fontSize: "9px",
-              fontWeight: "700",
-              textTransform: "uppercase",
-              letterSpacing: "0.2em",
-              color: "#1871bd",
-              background: "transparent",
-              border: "1px solid #1871bd",
-              borderRadius: "2px",
-              padding: "4px 12px",
-              height: "28px",
-              cursor: "pointer",
-              lineHeight: 1,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#1871bd";
-              e.currentTarget.style.color = "#fff";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "#1871bd";
-            }}
           >
             + ADD
           </button>
@@ -214,7 +189,7 @@ export function MiniApp() {
 
         {/* Submit overlay */}
         {showSubmitOverlay && (
-          <div className="absolute inset-0 flex flex-col bg-boston-gray-50" style={{ zIndex: 50 }}>
+          <div className="absolute inset-0 flex flex-col bg-boston-gray-50 z-50">
             <div
               className="flex items-center justify-between px-4 py-3 shrink-0 bg-navy-bar"
             >
@@ -223,50 +198,35 @@ export function MiniApp() {
                   if (submitMode !== "picker") { setSubmitMode("picker"); }
                   else { setShowSubmitOverlay(false); }
                 }}
-                className="transition-opacity duration-150 hover:opacity-70 t-sans-white"
-                style={{
-                  fontSize: "10px", fontWeight: "700",
-                  textTransform: "uppercase", letterSpacing: "0.15em",
-                  background: "none", border: "none", cursor: "pointer", padding: 0,
-                }}
+                className="transition-opacity duration-150 hover:opacity-70 t-sans-white btn-overlay-back"
               >
                 ← BACK
               </button>
               <span
-                className="t-sans"
-                style={{
-                  fontSize: "10px", fontWeight: "700",
-                  textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(255,255,255,0.5)",
-                }}
+                className="t-sans overlay-header-label"
               >
                 {submitMode === "spot" ? "Add a Spot" : submitMode === "happening" ? "Add an Event" : "Add to /boston"}
               </span>
-              <div style={{ width: "40px" }} />
+              <div className="w-10" />
             </div>
 
             <div className="flex-1 overflow-y-auto">
               {submitMode === "picker" && (
                 <div className="flex flex-col p-6 gap-4">
-                  <p className="italic text-center mb-2 t-serif-gray"
-                    style={{ fontSize: "13px" }}>
+                  <p className="italic text-center mb-2 t-serif-gray text-[13px]">
                     What are you adding to the guide?
                   </p>
 
                   <button
                     onClick={() => setSubmitMode("spot")}
-                    className="flex items-start gap-4 p-5 rounded-sm text-left transition-colors duration-150"
-                    style={{ background: "#fff", border: "2px solid #e0e0e0", cursor: "pointer" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#1871bd"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e0e0e0"; }}
+                    className="flex items-start gap-4 p-5 rounded-sm text-left transition-colors duration-150 btn-picker-card"
                   >
                     <span className="text-2xl shrink-0 mt-0.5">📍</span>
                     <div>
-                      <p className="font-bold uppercase tracking-widest mb-1 t-sans-navy"
-                        style={{ fontSize: "12px" }}>
+                      <p className="font-bold uppercase tracking-widest mb-1 t-sans-navy text-xs">
                         Add a Spot
                       </p>
-                      <p className="italic leading-snug t-serif-gray"
-                        style={{ fontSize: "12px" }}>
+                      <p className="italic leading-snug t-serif-gray text-xs">
                         A restaurant, bar, park, shop, or hidden gem. Goes into the Explore guide.
                       </p>
                     </div>
@@ -274,19 +234,14 @@ export function MiniApp() {
 
                   <button
                     onClick={() => setSubmitMode("happening")}
-                    className="flex items-start gap-4 p-5 rounded-sm text-left transition-colors duration-150"
-                    style={{ background: "#fff", border: "2px solid #e0e0e0", cursor: "pointer" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#1871bd"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e0e0e0"; }}
+                    className="flex items-start gap-4 p-5 rounded-sm text-left transition-colors duration-150 btn-picker-card"
                   >
                     <span className="text-2xl shrink-0 mt-0.5">📅</span>
                     <div>
-                      <p className="font-bold uppercase tracking-widest mb-1 t-sans-navy"
-                        style={{ fontSize: "12px" }}>
+                      <p className="font-bold uppercase tracking-widest mb-1 t-sans-navy text-xs">
                         Add an Event
                       </p>
-                      <p className="italic leading-snug t-serif-gray"
-                        style={{ fontSize: "12px" }}>
+                      <p className="italic leading-snug t-serif-gray text-xs">
                         Something happening in Boston — a market, show, open studio, pop-up. Goes into Today.
                       </p>
                     </div>
@@ -306,15 +261,9 @@ export function MiniApp() {
 
       {/* Bottom tab bar */}
       <nav
-        className="flex items-stretch shrink-0"
+        className="flex items-stretch shrink-0 nav-bottom"
         role="navigation"
         aria-label="Main navigation"
-        style={{
-          background: "#091f2f",
-          borderTop: "1px solid rgba(255,255,255,0.1)",
-          position: "relative",
-          paddingBottom: "env(safe-area-inset-bottom, 8px)",
-        }}
       >
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -324,30 +273,19 @@ export function MiniApp() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 relative focus:outline-none"
-                style={{ minHeight: "64px" }}
+                className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 relative focus:outline-none tab-btn"
                 aria-label={tab.label}
                 aria-current={isActive ? "page" : undefined}
               >
                 <div
-                  className="flex items-center justify-center transition-colors duration-150"
-                  style={{
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "50%",
-                    background: isActive ? "#1871bd" : "rgba(24, 113, 189, 0.15)",
-                    flexShrink: 0,
-                  }}
+                  className={`flex items-center justify-center transition-colors duration-150 tab-circle ${isActive ? "tab-circle-active" : "tab-circle-inactive"}`}
                 >
-                  <span className="text-base leading-none" style={{ opacity: isActive ? 1 : 0.6 }}>
+                  <span className={`text-base leading-none ${isActive ? "opacity-100" : "opacity-60"}`}>
                     {tab.icon}
                   </span>
                 </div>
                 <span
-                  className="text-[9px] font-bold uppercase tracking-widest leading-none t-sans"
-                  style={{
-                    color: isActive ? "#1871bd" : "rgba(255,255,255,0.45)",
-                  }}
+                  className={`text-[9px] font-bold uppercase tracking-widest leading-none t-sans ${isActive ? "tab-label-active" : "tab-label-inactive"}`}
                 >
                   {tab.label}
                 </span>
@@ -359,23 +297,19 @@ export function MiniApp() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 relative transition-colors duration-150 focus:outline-none"
-              style={{ minHeight: "64px" }}              aria-label={tab.label}
+              className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 relative transition-colors duration-150 focus:outline-none tab-btn"
+              aria-label={tab.label}
               aria-current={isActive ? "page" : undefined}            >
               {isActive && (
                 <div
-                  className="absolute top-0 left-1/2 -translate-x-1/2"
-                  style={{ width: "60%", height: "3px", background: "#1871bd", borderRadius: "0 0 2px 2px" }}
+                  className="absolute top-0 left-1/2 -translate-x-1/2 tab-indicator"
                 />
               )}
-              <span className="text-base leading-none" style={{ opacity: isActive ? 1 : 0.45 }}>
+              <span className={`text-base leading-none ${isActive ? "opacity-100" : "opacity-45"}`}>
                 {tab.icon}
               </span>
               <span
-                className="text-[9px] font-bold uppercase tracking-widest leading-none t-sans"
-                style={{
-                  color: isActive ? "#1871bd" : "rgba(255,255,255,0.45)",
-                }}
+                className={`text-[9px] font-bold uppercase tracking-widest leading-none t-sans ${isActive ? "tab-label-active" : "tab-label-inactive"}`}
               >
                 {tab.label}
               </span>

@@ -22,7 +22,7 @@ type Props = {
 
 export function TodayTab({
   onNavigateToNeighborhood,
-  onOpenSubmit,
+  onOpenSubmit: _onOpenSubmit,
   weatherCache,
   onWeatherCacheUpdate,
   sportsCache,

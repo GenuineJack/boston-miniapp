@@ -87,7 +87,7 @@ export function BuilderDetailSheet({
 
   if (!builder) return null;
 
-  const categoryIcon = builder.category
+  const _categoryIcon = builder.category
     ? BUILDER_CATEGORY_ICONS[builder.category as BuilderCategory] ?? "✦"
     : null;
 
@@ -107,9 +107,8 @@ export function BuilderDetailSheet({
       {/* Sheet */}
       <div
         ref={sheetRef}
-        className="fixed bottom-0 left-0 right-0 z-50 rounded-t-lg overflow-hidden bg-white"
+        className="fixed bottom-0 left-0 right-0 z-50 rounded-t-lg overflow-hidden bg-white max-h-[82vh]"
         style={{
-          maxHeight: "82vh",
           transform: `translateY(${isAnimatingOut ? "100%" : `${translateY}px`})`,
           transition: isAnimatingOut
             ? "transform 0.2s ease-in"
@@ -129,8 +128,7 @@ export function BuilderDetailSheet({
         </div>
 
         <div
-          className="px-4 pb-6 overflow-y-auto"
-          style={{ maxHeight: "calc(82vh - 40px)" }}
+          className="px-4 pb-6 overflow-y-auto max-h-[calc(82vh-40px)]"
           onTouchStart={(e) => {
             const el = e.currentTarget;
             if (el.scrollTop === 0) handleTouchStart(e);
@@ -154,8 +152,7 @@ export function BuilderDetailSheet({
                 </h2>
                 {builder.verified && (
                   <span
-                    className="inline-flex items-center justify-center w-4 h-4 rounded-full text-white shrink-0 bg-boston-blue"
-                    style={{ fontSize: "9px", fontWeight: "900" }}
+                    className="inline-flex items-center justify-center w-4 h-4 rounded-full text-white shrink-0 bg-boston-blue text-[9px] font-black"
                     aria-label="Verified"
                   >
                     ✓
@@ -193,7 +190,7 @@ export function BuilderDetailSheet({
           </div>
 
           {/* Divider */}
-          <div className="mb-4" style={{ borderTop: "1px solid #e0e0e0" }} />
+          <div className="mb-4 stats-divider" />
 
           {/* Bio */}
           {builder.bio && (
@@ -250,7 +247,7 @@ export function BuilderDetailSheet({
           )}
 
           {/* Divider */}
-          <div className="mb-4" style={{ borderTop: "1px solid #e0e0e0" }} />
+          <div className="mb-4 stats-divider" />
 
           {/* Spots section */}
           <div className="mb-6">
@@ -267,8 +264,7 @@ export function BuilderDetailSheet({
                     onViewBuilderSpots?.(builder.fid, builder.username);
                     handleClose();
                   }}
-                  className="text-[10px] font-bold uppercase tracking-widest hover:underline focus:outline-none t-sans-blue"
-                  style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                  className="text-[10px] font-bold uppercase tracking-widest hover:underline focus:outline-none t-sans-blue btn-link-base"
                 >
                   See all →
                 </button>
@@ -278,7 +274,7 @@ export function BuilderDetailSheet({
             {spotsLoading ? (
               <div className="flex flex-col gap-2">
                 {[1, 2].map((i) => (
-                  <div key={i} className="rounded-sm bg-[#e0e0e0] animate-pulse" style={{ height: "80px" }} />
+                  <div key={i} className="rounded-sm bg-[#e0e0e0] animate-pulse skeleton-h-80" />
                 ))}
               </div>
             ) : builderSpots.length === 0 ? (
@@ -309,23 +305,13 @@ export function BuilderDetailSheet({
               href={`https://farcaster.xyz/${builder.username}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 py-3 rounded-sm text-xs font-bold uppercase tracking-widest text-center transition-colors duration-150 hover:opacity-90 t-sans-white bg-boston-blue"
-              style={{
-                minHeight: "44px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                textDecoration: "none",
-              }}
+              className="flex-1 py-3 rounded-sm text-xs font-bold uppercase tracking-widest text-center transition-colors duration-150 hover:opacity-90 t-sans-white bg-boston-blue min-h-11 flex items-center justify-center no-underline"
             >
               View on Farcaster
             </a>
             <button
               onClick={handleClose}
-              className="px-4 py-3 rounded-sm text-xs font-bold uppercase tracking-widest border-2 border-[#091f2f] transition-colors duration-150 focus:outline-none t-sans-navy"
-              style={{
-                minHeight: "44px",
-              }}
+              className="px-4 py-3 rounded-sm text-xs font-bold uppercase tracking-widest border-2 border-[#091f2f] transition-colors duration-150 focus:outline-none t-sans-navy min-h-11"
             >
               Close
             </button>

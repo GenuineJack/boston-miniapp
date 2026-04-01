@@ -84,11 +84,7 @@ export function ExploreTab({
     <div className="flex flex-col h-full">
       {/* Map — collapsible */}
       <div
-        style={{
-          height: mapCollapsed ? "0px" : "clamp(180px, 30vh, 240px)",
-          overflow: "hidden",
-          transition: "height 0.3s ease",
-        }}
+        className={mapCollapsed ? "map-container-collapsed" : "map-container"}
       >
         <MapView spots={filtered} onSpotClick={onSelectSpot} />
       </div>
@@ -97,15 +93,7 @@ export function ExploreTab({
       {mapCollapsed && (
         <button
           onClick={() => setMapCollapsed(false)}
-          className="w-full flex items-center justify-center py-1.5 shrink-0 bg-navy t-sans-white"
-          style={{
-            fontSize: "9px",
-            fontWeight: "700",
-            textTransform: "uppercase",
-            letterSpacing: "0.15em",
-            border: "none",
-            cursor: "pointer",
-          }}
+          className="w-full flex items-center justify-center py-1.5 shrink-0 bg-navy t-sans-white btn-show-map"
         >
           ▲ Show Map
         </button>
@@ -167,30 +155,13 @@ export function ExploreTab({
             placeholder="Search spots..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full focus:outline-none t-sans-navy bg-white border border-boston-gray-100"
+            className={`w-full focus:outline-none t-sans-navy bg-white border border-boston-gray-100 explore-search-input ${searchQuery ? "pr-8" : "pr-3"}`}
             aria-label="Search spots"
-            style={{
-              fontSize: "12px",
-              borderRadius: "3px",
-              height: "36px",
-              paddingLeft: "36px",
-              paddingRight: searchQuery ? "32px" : "12px",
-            }}
-            onFocus={(e) => { e.target.style.borderColor = "#1871bd"; e.target.style.boxShadow = "0 0 0 3px rgba(24,113,189,0.15)"; }}
-            onBlur={(e) => { e.target.style.borderColor = "#e0e0e0"; e.target.style.boxShadow = "none"; }}
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 focus:outline-none text-boston-gray-400"
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: "4px",
-                fontSize: "13px",
-                lineHeight: 1,
-              }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 focus:outline-none text-boston-gray-400 btn-clear-search"
               aria-label="Clear search"
             >
               ✕
@@ -204,7 +175,7 @@ export function ExploreTab({
         {loading ? (
           <div className="flex flex-col gap-3 p-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-sm bg-[#e0e0e0] animate-pulse" style={{ height: "96px" }} />
+              <div key={i} className="rounded-sm bg-[#e0e0e0] animate-pulse h-24" />
             ))}
           </div>
         ) : error ? (

@@ -22,12 +22,11 @@ export function BuilderFilterBar({
 
   return (
     <div
-      className="shrink-0 bg-boston-gray-50"
-      style={{ borderBottom: "1px solid #e0e0e0" }}
+      className="shrink-0 bg-boston-gray-50 border-b border-boston-gray-100"
     >
       {/* Category pills — horizontally scrollable */}
       <div className="overflow-x-auto py-3 px-4 no-scrollbar">
-        <div className="flex items-center gap-2" style={{ width: "max-content" }}>
+        <div className="flex items-center gap-2 w-max">
           {allCategories.map((cat) => {
             const isActive = activeCategory === cat;
             const icon = cat !== "All" ? BUILDER_CATEGORY_ICONS[cat as BuilderCategory] : "✦";
@@ -35,13 +34,11 @@ export function BuilderFilterBar({
               <button
                 key={cat}
                 onClick={() => onCategoryChange(cat)}
-                className="t-sans inline-flex items-center gap-1 px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-colors duration-150 focus:outline-none"
-                style={{
-                  background: isActive ? "#091f2f" : "transparent",
-                  color: isActive ? "#fff" : "#091f2f",
-                  border: `1px solid ${isActive ? "#091f2f" : "#c0c0c0"}`,
-                  minHeight: "36px",
-                }}
+                className={`t-sans inline-flex items-center gap-1 px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-colors duration-150 focus:outline-none min-h-9 border ${
+                  isActive
+                    ? "bg-navy text-white border-navy"
+                    : "bg-transparent text-navy border-boston-gray-200"
+                }`}
               >
                 {icon} {cat}
               </button>
@@ -63,18 +60,7 @@ export function BuilderFilterBar({
           value={activeNeighborhood}
           onChange={(e) => onNeighborhoodChange(e.target.value)}
           aria-label="Filter by neighborhood"
-          className="t-sans-navy bg-white flex-1 text-[11px] font-medium focus:outline-none"
-          style={{
-            border: "1px solid #e0e0e0",
-            borderRadius: "3px",
-            padding: "6px 8px",
-            height: "30px",
-            appearance: "none",
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23828282' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "right 8px center",
-            paddingRight: "24px",
-          }}
+          className="t-sans-navy bg-white flex-1 text-[11px] font-medium focus:outline-none select-filter"
         >
           <option value="All">All neighborhoods</option>
           <optgroup label="Boston Neighborhoods">

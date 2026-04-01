@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { migrateSpotsFid, migrateSpotsLinks } from "@/db/actions/boston-actions";
+import { privateConfig } from "@/config/private-config";
 
 // Simple secret guard — same pattern as seed-spots
-const SEED_SECRET = process.env.SEED_SECRET ?? "";
+const SEED_SECRET = privateConfig.seedSecret;
 
 /**
  * POST /api/migrate-spots

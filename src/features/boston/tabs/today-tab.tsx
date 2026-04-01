@@ -3,14 +3,17 @@
 import { useState, useEffect } from "react";
 import { CommunityHappening, BostonGame } from "@/features/boston/types";
 import { getCommunityHappenings } from "@/db/actions/boston-actions";
-import { WeatherStrip, WeatherCache, WeatherData, fetchWeather, isWeatherCacheFresh } from "@/features/boston/components/weather-strip";
+import { WeatherStrip, WeatherCache, WeatherData, fetchWeather, isWeatherCacheFresh, fetchMbtaAlert, MbtaAlert } from "@/features/boston/components/weather-strip";
 import { SportsRow, SportsCache, fetchAllGames, isSportsCacheFresh, getLocalDateStr } from "@/features/boston/components/sports-row";
 import { HappeningsSection } from "@/features/boston/components/happenings-section";
+import { TeamDetailSheet } from "@/features/boston/components/team-detail-sheet";
 import { NewsSection } from "@/features/boston/components/news-section";
+import { getTimeContext } from "@/features/boston/utils/time-context";
 import type { NewsItem } from "@/app/api/news/route";
 
 type Props = {
   onNavigateToNeighborhood: (neighborhoodId: string) => void;
+  onOpenWorldCup?: () => void;
   onOpenSubmit: () => void;
   weatherCache: WeatherCache;
   onWeatherCacheUpdate: (cache: WeatherCache) => void;
@@ -22,6 +25,7 @@ type Props = {
 
 export function TodayTab({
   onNavigateToNeighborhood,
+  onOpenWorldCup,
   onOpenSubmit: _onOpenSubmit,
   weatherCache,
   onWeatherCacheUpdate,
@@ -31,10 +35,14 @@ export function TodayTab({
   onNewsCacheUpdate,
 }: Props) {
   const [communityHappenings, setCommunityHappenings] = useState<CommunityHappening[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(!isWeatherCacheFresh(weatherCache));
   const [weatherError, setWeatherError] = useState(false);
   const [sportsLoading, setSportsLoading] = useState(!isSportsCacheFresh(sportsCache));
   const [sportsFailed, setSportsFailed] = useState(false);
+  const [mbtaAlert, setMbtaAlert] = useState<MbtaAlert | null>(
+    weatherCache?.mbtaAlert ?? null,
+  );
 
   useEffect(() => {
     getCommunityHappenings(20).then((data) => setCommunityHappenings(data as CommunityHappening[]));
@@ -43,8 +51,12 @@ export function TodayTab({
   useEffect(() => {
     if (isWeatherCacheFresh(weatherCache)) { setWeatherLoading(false); return; }
     setWeatherLoading(true);
-    fetchWeather()
-      .then((data) => { onWeatherCacheUpdate({ data, timestamp: Date.now() }); setWeatherLoading(false); })
+    Promise.all([fetchWeather(), fetchMbtaAlert()])
+      .then(([data, alert]) => {
+        setMbtaAlert(alert);
+        onWeatherCacheUpdate({ data, mbtaAlert: alert, timestamp: Date.now() });
+        setWeatherLoading(false);
+      })
       .catch(() => { setWeatherError(true); setWeatherLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -62,14 +74,31 @@ export function TodayTab({
   const weatherData: WeatherData | null = weatherCache?.data ?? null;
   const gamesData: BostonGame[] = sportsCache?.data ?? [];
 
+  // Time-based section ordering: evening → sports first, morning → news first
+  const timeCtx = getTimeContext();
+  const sportsFirst = timeCtx === "evening" || timeCtx === "late-night";
+
+  const sportsSection = <SportsRow games={gamesData} loading={sportsLoading} fetchFailed={sportsFailed} onTeamClick={setSelectedTeam} />;
+  const newsSection = <NewsSection cachedNews={newsCache} onNewsLoaded={onNewsCacheUpdate} />;
+  const happeningsSection = <HappeningsSection onNavigateToNeighborhood={onNavigateToNeighborhood} onOpenWorldCup={onOpenWorldCup} communityHappenings={communityHappenings} />;
+
   return (
     <div className="flex flex-col h-full overflow-y-auto">
-      <WeatherStrip weather={weatherData} loading={weatherLoading} error={weatherError} todayLabel={todayLabel} />
+      <WeatherStrip weather={weatherData} loading={weatherLoading} error={weatherError} todayLabel={todayLabel} mbtaAlert={mbtaAlert} />
       <div className="flex flex-col pb-6">
-        <SportsRow games={gamesData} loading={sportsLoading} fetchFailed={sportsFailed} />
-        <NewsSection cachedNews={newsCache} onNewsLoaded={onNewsCacheUpdate} />
-        <HappeningsSection onNavigateToNeighborhood={onNavigateToNeighborhood} communityHappenings={communityHappenings} />
+        {sportsFirst ? (
+          <>{sportsSection}{newsSection}{happeningsSection}</>
+        ) : (
+          <>{newsSection}{sportsSection}{happeningsSection}</>
+        )}
       </div>
+
+      {/* Team detail overlay */}
+      <TeamDetailSheet
+        teamName={selectedTeam}
+        games={gamesData}
+        onClose={() => setSelectedTeam(null)}
+      />
     </div>
   );
 }

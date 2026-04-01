@@ -11,6 +11,7 @@ import { SubmitTab } from "@/features/boston/tabs/submit-tab";
 import { SubmitHappeningForm } from "@/features/boston/tabs/submit-happening-form";
 import { SpotDetailSheet } from "@/features/boston/components/spot-detail-sheet";
 import { OnboardingOverlay } from "@/features/boston/components/onboarding-overlay";
+import { WorldCupPage } from "@/features/boston/components/world-cup-page";
 import { getSpots, getBuilderByFid } from "@/db/actions/boston-actions";
 import type { Builder } from "@/features/boston/types";
 import type { WeatherCache } from "@/features/boston/components/weather-strip";
@@ -24,7 +25,7 @@ const TABS: { id: ActiveTab; label: string; icon: string; isCenter?: boolean }[]
   { id: "neighborhoods", label: "Areas", icon: "🏘" },
   { id: "today", label: "Today", icon: "☀️", isCenter: true },
   { id: "builders", label: "Builders", icon: "👥" },
-  { id: "new", label: "Community", icon: "✦" },
+  { id: "new", label: "Dispatch", icon: "📰" },
 ];
 
 export function MiniApp() {
@@ -47,7 +48,16 @@ export function MiniApp() {
   const [pendingBuilderView, setPendingBuilderView] = useState<Builder | null>(null);
 
   // Onboarding overlay
-  const [showOnboarding, setShowOnboarding] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    try {
+      return !localStorage.getItem("boston-onboarding-seen");
+    } catch {
+      return false;
+    }
+  });
+
+  // World Cup page overlay
+  const [showWorldCup, setShowWorldCup] = useState(false);
 
   // Lifted API caches — survive tab switches for the entire session
   const [weatherCache, setWeatherCache] = useState<WeatherCache>(null);
@@ -66,14 +76,28 @@ export function MiniApp() {
       });
   }, []);
 
-  // Deep link: ?spotId=... opens spot detail
+  // Deep link: ?spotId=... opens spot detail, ?builderId=... opens builder detail
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const spotId = params.get("spotId");
       if (spotId && spots.length > 0) {
         const match = spots.find((s) => s.id === spotId);
-        if (match) setSelectedSpot(match);
+        if (match) {
+          setSelectedSpot(match);
+          setActiveTab("explore");
+        }
+      }
+      const builderId = params.get("builderId");
+      if (builderId) {
+        import("@/db/actions/boston-actions").then(({ getBuilderByFid }) => {
+          getBuilderByFid(Number(builderId)).then((builder) => {
+            if (builder) {
+              setPendingBuilderView(builder as Builder);
+              setActiveTab("builders");
+            }
+          });
+        });
       }
     } catch {
       // ignore
@@ -165,6 +189,7 @@ export function MiniApp() {
           {activeTab === "today" && (
             <TodayTab
               onNavigateToNeighborhood={handleNavigateToExplore}
+              onOpenWorldCup={() => setShowWorldCup(true)}
               onOpenSubmit={() => { setSubmitMode("happening"); setShowSubmitOverlay(true); }}
               weatherCache={weatherCache}
               onWeatherCacheUpdate={setWeatherCache}
@@ -328,6 +353,15 @@ export function MiniApp() {
       {/* Onboarding overlay — shown once per device */}
       {showOnboarding && (
         <OnboardingOverlay onDismiss={() => setShowOnboarding(false)} />
+      )}
+
+      {/* World Cup full-screen page */}
+      {showWorldCup && (
+        <WorldCupPage
+          onBack={() => setShowWorldCup(false)}
+          spots={spots}
+          onSelectSpot={setSelectedSpot}
+        />
       )}
     </div>
   );

@@ -9,6 +9,8 @@ type LeafletMapProps = {
   spots: Spot[];
   onSpotClick: (spot: Spot) => void;
   height: string;
+  center?: [number, number];
+  zoom?: number;
 };
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -33,7 +35,7 @@ function _buildIcon(L: typeof import("leaflet"), color: string) {
   });
 }
 
-export function LeafletMapInner({ spots, onSpotClick, height }: LeafletMapProps) {
+export function LeafletMapInner({ spots, onSpotClick, height, center, zoom }: LeafletMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<import("leaflet").CircleMarker[]>([]);
@@ -52,8 +54,8 @@ export function LeafletMapInner({ spots, onSpotClick, height }: LeafletMapProps)
       L.Icon.Default.mergeOptions({ iconUrl: undefined, shadowUrl: undefined });
 
       const map = L.map(containerRef.current, {
-        center: [42.3601, -71.0589],
-        zoom: 13,
+        center: center ?? [42.3601, -71.0589],
+        zoom: zoom ?? 13,
         minZoom: 11,
         maxZoom: 17,
         zoomControl: false,

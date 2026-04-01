@@ -7,7 +7,10 @@ import {
   approveSpot,
   rejectSpot,
   getSubmissionErrors,
+  getSpots,
+  toggleTouristPick,
 } from "@/db/actions/boston-actions";
+import { getDispatchForDate, updateDispatchContent } from "@/db/actions/dispatch-actions";
 import type { Spot } from "@/features/boston/types";
 
 const ADMIN_FID = 218957;
@@ -25,16 +28,33 @@ export function AdminPanel() {
   const { data: user, isLoading } = useFarcasterUser();
   const [pending, setPending] = useState<Spot[]>([]);
   const [errors, setErrors] = useState<ErrorRow[]>([]);
+  const [allSpots, setAllSpots] = useState<Spot[]>([]);
+  const [todayDispatch, setTodayDispatch] = useState<{ date: string; content: string } | null>(null);
+  const [dispatchEditing, setDispatchEditing] = useState(false);
+  const [dispatchDraft, setDispatchDraft] = useState("");
+  const [regenerating, setRegenerating] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
 
   const loadData = useCallback(async () => {
     if (!user?.fid) return;
     setLoading(true);
-    const [p, e] = await Promise.all([getPendingSpots(user.fid), getSubmissionErrors(50, user.fid)]);
+    const [p, e, spots, dispatch] = await Promise.all([
+      getPendingSpots(user.fid),
+      getSubmissionErrors(50, user.fid),
+      getSpots({ limit: 200 }),
+      getDispatchForDate(todayStr),
+    ]);
     setPending(p as Spot[]);
     setErrors(e as ErrorRow[]);
+    setAllSpots(spots as Spot[]);
+    if (dispatch) {
+      setTodayDispatch({ date: dispatch.date, content: dispatch.content });
+      setDispatchDraft(dispatch.content);
+    }
     setLoading(false);
-  }, [user?.fid]);
+  }, [user?.fid, todayStr]);
 
   useEffect(() => {
     if (user?.fid === ADMIN_FID) {
@@ -75,6 +95,39 @@ export function AdminPanel() {
   async function handleReject(id: string) {
     await rejectSpot(id, user!.fid);
     setPending((prev) => prev.filter((s) => s.id !== id));
+  }
+
+  async function handleRegenerateDispatch() {
+    setRegenerating(true);
+    try {
+      const res = await fetch("/api/dispatch/generate", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET ?? ""}` },
+      });
+      if (res.ok) {
+        const dispatch = await getDispatchForDate(todayStr);
+        if (dispatch) {
+          setTodayDispatch({ date: dispatch.date, content: dispatch.content });
+          setDispatchDraft(dispatch.content);
+        }
+      }
+    } finally {
+      setRegenerating(false);
+    }
+  }
+
+  async function handleSaveDispatch() {
+    if (!todayDispatch) return;
+    await updateDispatchContent(todayDispatch.date, dispatchDraft, true);
+    setTodayDispatch({ ...todayDispatch, content: dispatchDraft });
+    setDispatchEditing(false);
+  }
+
+  async function handleToggleTouristPick(spotId: string, currentValue: boolean) {
+    await toggleTouristPick(spotId, !currentValue, user!.fid);
+    setAllSpots((prev) =>
+      prev.map((s) => s.id === spotId ? { ...s, touristPick: !currentValue } : s)
+    );
   }
 
   return (
@@ -192,6 +245,115 @@ export function AdminPanel() {
               </details>
             </div>
           ))}
+        </section>
+
+        {/* Dispatch Management */}
+        <section>
+          <h2 className="text-sm font-bold uppercase tracking-widest mb-3 t-sans-navy">
+            📰 Today&apos;s Dispatch
+          </h2>
+
+          {!loading && !todayDispatch && (
+            <div className="bg-white rounded-sm p-3 box-bordered">
+              <p className="text-xs italic t-serif-gray mb-3">No dispatch generated for today.</p>
+              <button
+                onClick={handleRegenerateDispatch}
+                disabled={regenerating}
+                className="px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans-white bg-boston-blue border-none cursor-pointer disabled:opacity-50"
+              >
+                {regenerating ? "Generating..." : "Generate Dispatch"}
+              </button>
+            </div>
+          )}
+
+          {todayDispatch && (
+            <div className="bg-white rounded-sm p-3 box-bordered">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold uppercase tracking-widest t-sans-gray">
+                  {todayDispatch.date}
+                </span>
+                <div className="flex gap-2">
+                  {!dispatchEditing && (
+                    <button
+                      onClick={() => setDispatchEditing(true)}
+                      className="text-[10px] font-bold uppercase tracking-widest t-sans-blue cursor-pointer bg-transparent border-none"
+                    >
+                      Edit
+                    </button>
+                  )}
+                  <button
+                    onClick={handleRegenerateDispatch}
+                    disabled={regenerating}
+                    className="text-[10px] font-bold uppercase tracking-widest t-sans-gray cursor-pointer bg-transparent border-none disabled:opacity-50"
+                  >
+                    {regenerating ? "..." : "Regenerate"}
+                  </button>
+                </div>
+              </div>
+              {dispatchEditing ? (
+                <div>
+                  <textarea
+                    value={dispatchDraft}
+                    onChange={(e) => setDispatchDraft(e.target.value)}
+                    rows={12}
+                    className="w-full text-xs font-mono p-2 border border-boston-gray-200 rounded-sm mb-2 resize-y"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveDispatch}
+                      className="px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans-white bg-boston-blue border-none cursor-pointer"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => { setDispatchEditing(false); setDispatchDraft(todayDispatch.content); }}
+                      className="px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans-gray bg-transparent border border-boston-gray-200 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <pre className="text-[10px] whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto bg-boston-gray-50 p-2 rounded-sm">
+                  {todayDispatch.content.slice(0, 500)}{todayDispatch.content.length > 500 ? "..." : ""}
+                </pre>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* Tourist Picks */}
+        <section>
+          <h2 className="text-sm font-bold uppercase tracking-widest mb-3 t-sans-navy">
+            ✈️ Tourist Picks ({allSpots.filter(s => s.touristPick).length})
+          </h2>
+          <p className="text-[10px] t-sans-gray mb-3">
+            Toggle spots as tourist picks. These appear under the ✈️ Tourist Picks filter.
+          </p>
+          <div className="flex flex-col gap-1">
+            {allSpots
+              .sort((a, b) => (a.touristPick === b.touristPick ? 0 : a.touristPick ? -1 : 1))
+              .slice(0, 50)
+              .map((spot) => (
+                <div
+                  key={spot.id}
+                  className={`flex items-center justify-between gap-2 p-2 rounded-sm ${spot.touristPick ? "bg-boston-blue/10" : "bg-white"}`}
+                >
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold t-sans-navy truncate">{spot.name}</p>
+                    <p className="text-[10px] t-sans-gray">{spot.neighborhood} · {spot.category}</p>
+                  </div>
+                  <button
+                    onClick={() => handleToggleTouristPick(spot.id, spot.touristPick)}
+                    className={`shrink-0 px-2 py-1 rounded-sm text-[9px] font-bold uppercase tracking-widest cursor-pointer border-none ${
+                      spot.touristPick ? "bg-boston-blue text-white" : "bg-boston-gray-100 t-sans-gray"
+                    }`}
+                  >
+                    {spot.touristPick ? "✈️ Pick" : "Add"}
+                  </button>
+                </div>
+              ))}
+          </div>
         </section>
       </div>
     </div>

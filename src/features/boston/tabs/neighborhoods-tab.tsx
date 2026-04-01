@@ -1,8 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { NEIGHBORHOODS, REGION_IDS, NeighborhoodInfo, Spot } from "@/features/boston/types";
 import { getSpotCountByNeighborhood, getSpotsByNeighborhood } from "@/db/actions/boston-actions";
+
+const LeafletMapInner = dynamic(
+  () => import("@/features/boston/components/leaflet-map").then((m) => ({ default: m.LeafletMapInner })),
+  { ssr: false, loading: () => <div className="w-full h-[200px] bg-navy animate-pulse rounded-sm" /> }
+);
 
 const CITY_NEIGHBORHOODS = NEIGHBORHOODS.filter((n) => !REGION_IDS.has(n.id));
 const REGIONS = NEIGHBORHOODS.filter((n) => REGION_IDS.has(n.id));
@@ -71,6 +77,24 @@ function NeighborhoodDetail({ neighborhood, spotCount, onBack, onViewSpots, onSe
         >
           {neighborhood.description}
         </p>
+      </div>
+
+      {/* Neighborhood-scoped map */}
+      <div className="border-b border-[#e0e0e0]">
+        <LeafletMapInner
+          spots={inlineSpots}
+          onSpotClick={onSelectSpot}
+          height="200px"
+          center={neighborhood.center}
+          zoom={14}
+        />
+        {!spotsLoading && inlineSpots.length === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ position: "relative", marginTop: "-100px", height: 0 }}>
+            <span className="bg-navy/80 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm t-sans">
+              No spots here yet
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Inline spots */}

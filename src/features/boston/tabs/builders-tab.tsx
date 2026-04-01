@@ -8,7 +8,7 @@ import { FeaturedBuilderCard } from "@/features/boston/components/featured-build
 import { BuilderFilterBar } from "@/features/boston/components/builder-filter-bar";
 import { BuilderDetailSheet } from "@/features/boston/components/builder-detail-sheet";
 import { BuilderJoinForm } from "@/features/boston/components/builder-join-form";
-import { useFarcasterUser } from "@/neynar-farcaster-sdk/mini";
+import { useFarcasterUser, useSDKReady } from "@/neynar-farcaster-sdk/mini";
 
 type BuildersTabProps = {
   onViewBuilderSpots?: (fid: number, username: string) => void;
@@ -19,7 +19,9 @@ type BuildersTabProps = {
 
 export function BuildersTab({ onViewBuilderSpots, onSpotClick, pendingBuilderView, onPendingBuilderViewConsumed }: BuildersTabProps) {
   const { data: user } = useFarcasterUser();
+  const sdkReady = useSDKReady();
   const userFid = user?.fid;
+  const isWebContext = !sdkReady && typeof window !== "undefined";
 
   const [allBuilders, setAllBuilders] = useState<(Builder & { spotCount: number })[]>([]);
   const [loading, setLoading] = useState(true);
@@ -129,6 +131,28 @@ export function BuildersTab({ onViewBuilderSpots, onSpotClick, pendingBuilderVie
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
+        {/* Web context — prompt to open in Warpcast */}
+        {isWebContext && !user && (
+          <div className="flex items-center justify-between gap-3 px-4 py-3 bg-navy border-b border-white/[0.08]">
+            <div className="min-w-0">
+              <p className="text-sm italic leading-none t-serif text-white">
+                Sign in with Farcaster
+              </p>
+              <p className="text-xs italic mt-1 leading-tight t-serif text-white/70">
+                Open in Warpcast to join the builder directory.
+              </p>
+            </div>
+            <a
+              href="https://warpcast.com/~/mini-app/launch?domain=boston.neynar.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans bg-boston-blue text-white hover:opacity-90 transition-opacity"
+            >
+              Open →
+            </a>
+          </div>
+        )}
+
         {/* Join banner — sticky at top of scroll content */}
         {showJoinBanner && (
           <div

@@ -171,6 +171,26 @@ const ALTER_MIGRATIONS: string[] = [
   `ALTER TABLE community_happenings ADD COLUMN IF NOT EXISTS url text`,
   `UPDATE builders SET categories = CONCAT('["', category, '"]') WHERE category IS NOT NULL AND (categories IS NULL OR categories = '')`,
   `UPDATE builders SET project_links = CONCAT('["', project_url, '"]') WHERE project_url IS NOT NULL AND project_url != '' AND (project_links IS NULL OR project_links = '')`,
+  `ALTER TABLE spots ADD COLUMN IF NOT EXISTS tourist_pick boolean DEFAULT false NOT NULL`,
+  `CREATE TABLE IF NOT EXISTS dispatch (
+    id text PRIMARY KEY,
+    date text NOT NULL UNIQUE,
+    content text NOT NULL,
+    generated_at timestamp DEFAULT now() NOT NULL,
+    admin_override boolean DEFAULT false NOT NULL
+  )`,
+  // Tag ~10 iconic Boston spots as tourist picks
+  `UPDATE spots SET tourist_pick = true WHERE id IN (
+    'd5e10c8d-ea81-40ab-870a-4169c40b5ee5',
+    'a2408b4f-1f30-45d7-b647-ae781b861144',
+    '2922e181-f9c5-4515-9510-7e457019c071',
+    '308da953-26c3-4a3b-9d58-46aa7b74e268',
+    '06da5182-8858-4d63-9888-1cd9e0746628',
+    'ecda3024-373d-427c-807f-0b52f21b107b',
+    '6977eb02-3b23-4371-bda4-a9eaf42479f2',
+    'ce15464c-3070-47c5-a3fd-1a693d82ec56',
+    '1c31dc7b-caac-4c3c-95ba-0bb441ecd1c5'
+  )`,
 ];
 
 async function runQuery(query: string): Promise<boolean> {

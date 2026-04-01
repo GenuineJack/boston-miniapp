@@ -79,7 +79,7 @@ export function NewsSection({ cachedNews, onNewsLoaded }: NewsSectionProps) {
         ))}
       </div>
       <p className="t-sans-gray news-disclaimer">
-        From Universal Hub, WBUR, and Boston Herald
+        From Universal Hub, WBUR, Boston Herald, and Boston Business Journal
       </p>
     </section>
   );

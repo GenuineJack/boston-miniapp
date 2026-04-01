@@ -24,30 +24,26 @@ export async function getSpots(opts?: {
   submitterFid?: number;
   limit?: number;
 }) {
-  try {
-    // status = "approved" is always required
-    const conditions = [eq(spots.status, "approved")];
+  // Intentionally throws — lets mini-app.tsx .catch() fire
+  // and show the real error state to the user
+  const conditions = [eq(spots.status, "approved")];
 
-    if (opts?.category && opts.category !== "All") {
-      conditions.push(eq(spots.category, opts.category));
-    }
-    if (opts?.neighborhood) {
-      conditions.push(eq(spots.neighborhood, opts.neighborhood));
-    }
-    if (opts?.submitterFid !== undefined) {
-      conditions.push(eq(spots.submittedByFid, opts.submitterFid));
-    }
-
-    return await db
-      .select()
-      .from(spots)
-      .where(and(...conditions))
-      .orderBy(desc(spots.createdAt))
-      .limit(opts?.limit ?? 100);
-  } catch (error) {
-    console.error("Failed to get spots:", error);
-    return [];
+  if (opts?.category && opts.category !== "All") {
+    conditions.push(eq(spots.category, opts.category));
   }
+  if (opts?.neighborhood) {
+    conditions.push(eq(spots.neighborhood, opts.neighborhood));
+  }
+  if (opts?.submitterFid !== undefined) {
+    conditions.push(eq(spots.submittedByFid, opts.submitterFid));
+  }
+
+  return await db
+    .select()
+    .from(spots)
+    .where(and(...conditions))
+    .orderBy(desc(spots.createdAt))
+    .limit(opts?.limit ?? 100);
 }
 
 export async function getFeaturedSpots() {
@@ -662,4 +658,12 @@ export async function addBuilder(data: {
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
+}
+
+// ─── Tourist Picks ───────────────────────────────────────────────────────────
+
+export async function toggleTouristPick(spotId: string, touristPick: boolean, adminFid: number) {
+  verifyAdmin(adminFid);
+  await db.update(spots).set({ touristPick }).where(eq(spots.id, spotId));
+  return { success: true };
 }

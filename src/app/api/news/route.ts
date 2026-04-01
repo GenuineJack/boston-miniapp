@@ -4,6 +4,7 @@ const FEEDS = [
   { name: 'Universal Hub', url: 'https://www.universalhub.com/rss.xml', color: '#c8102e' },
   { name: 'WBUR', url: 'https://www.wbur.org/rss/news', color: '#00549f' },
   { name: 'Boston Herald', url: 'https://www.bostonherald.com/feed/', color: '#091f2f' },
+  { name: 'Boston Business Journal', url: 'https://feeds.bizjournals.com/bizj_boston', color: '#1a6b3c' },
 ];
 
 export interface NewsItem {

@@ -1,6 +1,7 @@
 "use client";
 
 import { BostonGame } from "@/features/boston/types";
+import { NON_ESPN_TEAMS } from "./teams-config";
 
 // ─── ESPN public API ──────────────────────────────────────────────────────────
 // No API key required. Returns today's scoreboard for each sport/league.
@@ -234,14 +235,15 @@ function formatShortDate(dateStr: string): string {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-function GameCard({ game }: { game: BostonGame }) {
+function GameCard({ game, onClick }: { game: BostonGame; onClick?: () => void }) {
   const isLive = game.status === "live";
   const isFinal = game.status === "final";
   const isToday = game.date === getLocalDateStr(new Date());
 
   return (
-    <div
-      className={`shrink-0 flex flex-col justify-between p-3 bg-white game-card ${isLive ? "game-card-live" : ""}`}
+    <button
+      onClick={onClick}
+      className={`shrink-0 flex flex-col justify-between p-3 bg-white game-card text-left cursor-pointer hover:bg-boston-gray-50 transition-colors ${isLive ? "game-card-live" : ""}`}
     >
       <div>
         <p
@@ -276,7 +278,7 @@ function GameCard({ game }: { game: BostonGame }) {
           {game.venue.split(",")[0]}
         </p>
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -299,9 +301,10 @@ type SportsRowProps = {
   games: BostonGame[];
   loading: boolean;
   fetchFailed: boolean;
+  onTeamClick?: (teamName: string) => void;
 };
 
-export function SportsRow({ games, loading, fetchFailed }: SportsRowProps) {
+export function SportsRow({ games, loading, fetchFailed, onTeamClick }: SportsRowProps) {
   return (
     <div className="px-4 mt-6">
       {/* Section header */}
@@ -347,10 +350,28 @@ export function SportsRow({ games, loading, fetchFailed }: SportsRowProps) {
           className="flex gap-3 overflow-x-auto pb-2 no-scrollbar"
         >
           {games.map((game) => (
-            <GameCard key={game.id} game={game} />
+            <GameCard key={game.id} game={game} onClick={() => onTeamClick?.(game.team)} />
           ))}
         </div>
       )}
+
+      {/* Non-ESPN teams — show during their season */}
+      {NON_ESPN_TEAMS.filter(t => t.activeMonths.includes(new Date().getMonth())).map((team) => (
+        <div key={team.name} className="mt-2 p-3 rounded-sm bg-boston-gray-50">
+          <p className="text-[10px] font-bold uppercase tracking-widest t-sans-navy">
+            {team.emoji} {team.fullName}
+          </p>
+          <p className="text-[11px] italic t-serif-body mt-0.5">{team.description}</p>
+          <a
+            href={team.scheduleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] font-bold t-sans-blue hover:underline mt-1 inline-block"
+          >
+            Schedule →
+          </a>
+        </div>
+      ))}
     </div>
   );
 }

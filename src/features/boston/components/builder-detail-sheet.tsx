@@ -5,6 +5,7 @@ import { Builder, Spot, BUILDER_CATEGORY_ICONS, BuilderCategory } from "@/featur
 import { getSpotsByBuilder } from "@/db/actions/boston-actions";
 import { SpotCard } from "@/features/boston/components/spot-card";
 import { BuilderAvatar } from "@/features/boston/components/builder-card";
+import { useShare } from "@/neynar-farcaster-sdk/mini";
 
 type BuilderDetailSheetProps = {
   builder: Builder | null;
@@ -26,6 +27,7 @@ export function BuilderDetailSheet({
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [builderSpots, setBuilderSpots] = useState<Spot[]>([]);
   const [spotsLoading, setSpotsLoading] = useState(false);
+  const { share } = useShare();
 
   useEffect(() => {
     if (builder) {
@@ -310,10 +312,16 @@ export function BuilderDetailSheet({
               View on Farcaster
             </a>
             <button
-              onClick={handleClose}
-              className="px-4 py-3 rounded-sm text-xs font-bold uppercase tracking-widest border-2 border-[#091f2f] transition-colors duration-150 focus:outline-none t-sans-navy min-h-11"
+              onClick={async () => {
+                await share({
+                  text: `🏗 Check out @${builder.username} in the /boston builder directory`,
+                  path: `/?builderId=${builder.fid}`,
+                  channelKey: "boston",
+                });
+              }}
+              className="px-4 py-3 rounded-sm text-xs font-bold uppercase tracking-widest transition-colors duration-150 focus:outline-none t-sans-white bg-navy min-h-11 border-none cursor-pointer"
             >
-              Close
+              Share
             </button>
           </div>
         </div>

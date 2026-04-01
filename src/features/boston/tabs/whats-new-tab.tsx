@@ -1,104 +1,65 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Spot, CategoryFilter } from "@/features/boston/types";
-import { getRecentSpots } from "@/db/actions/boston-actions";
-import { SpotFeedCard } from "@/features/boston/components/spot-feed-card";
-import { CategoryFilterBar } from "@/features/boston/components/category-filter";
+import { Spot } from "@/features/boston/types";
 
-type SeasonalBlock = {
-  type: "seasonal";
-  id: string;
-  title: string;
-  description: string;
-  emoji: string;
+// ─── Dispatch Content Type ───────────────────────────────────────────────────
+
+type DispatchContent = {
+  date: string;
+  banner: {
+    weather: string;
+    transit: string | null;
+    countdown: string | null;
+  };
+  intro: string;
+  whatYouMissed: { headline: string; url: string }[];
+  lastNight: { team: string; result: string; summary: string; url: string }[] | null;
+  getAroundToday: string | null;
+  tonight: { title: string; detail: string; url?: string }[];
+  todaysSpot: { name: string; neighborhood: string; reason: string; spotId?: string };
+  onThisDay: string;
+  theNumber: { number: string; context: string };
+  weatherWatch?: string;
 };
 
-type SpotEntry = {
-  type: "spot";
-  spot: Spot;
-};
+// ─── Fallback seasonal blocks ────────────────────────────────────────────────
 
-type FeedEntry = SeasonalBlock | SpotEntry;
-
-const SEASONAL_BLOCKS: SeasonalBlock[] = [
-  {
-    type: "seasonal",
-    id: "marathon-2026",
-    title: "Marathon Monday",
-    description: "Third Monday of April. The whole city shuts down for a footrace and that's correct. Best spots to watch: Heartbreak Hill, Kenmore Square, Boylston Street finish line.",
-    emoji: "🏃",
-  },
-  {
-    type: "seasonal",
-    id: "summer-rooftops",
-    title: "Rooftop Season",
-    description: "The window is short. May through September, rooftop bars are the correct answer. Know them before you need them.",
-    emoji: "🌆",
-  },
-  {
-    type: "seasonal",
-    id: "patio-season-2026",
-    title: "Patio Season",
-    description: "The city doubles in size when the patios open. South End, North End, Eastie waterfront. If it has outdoor seating, it's the right choice.",
-    emoji: "☀️",
-  },
-  {
-    type: "seasonal",
-    id: "fenway-opener-2026",
-    title: "Opening Day at Fenway",
-    description: "First Tuesday in April. The bleachers. The Sausage Guy. Lansdowne after. A civic holiday by any other name.",
-    emoji: "⚾",
-  },
+const FALLBACK_BLOCKS = [
+  { id: "marathon", emoji: "🏃", title: "Marathon Monday", desc: "Third Monday of April. The whole city shuts down for a footrace and that's correct." },
+  { id: "patios", emoji: "☀️", title: "Patio Season", desc: "The city doubles in size when the patios open. South End, North End, Eastie waterfront." },
+  { id: "fenway", emoji: "⚾", title: "Opening Day at Fenway", desc: "The bleachers. The Sausage Guy. Lansdowne after. A civic holiday by any other name." },
+  { id: "rooftops", emoji: "🌆", title: "Rooftop Season", desc: "May through September, rooftop bars are the correct answer." },
 ];
 
+// ─── Section Components ──────────────────────────────────────────────────────
 
-function SeasonalBlockCard({ block }: { block: SeasonalBlock }) {
+function BannerStrip({ banner }: { banner: DispatchContent["banner"] }) {
+  const parts = [banner.weather];
+  if (banner.transit) parts.push(banner.transit);
+  if (banner.countdown) parts.push(banner.countdown);
   return (
-    <div
-      className="p-4 rounded-sm bg-navy"
-    >
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-lg">{block.emoji}</span>
-        <span
-          className="text-[9px] font-bold uppercase tracking-widest t-sans seasonal-label"
-        >
-          Seasonal
+    <div className="px-4 py-2 bg-navy text-[10px] t-sans text-white/70 flex items-center gap-1.5 flex-wrap">
+      {parts.map((p, i) => (
+        <span key={i}>
+          {i > 0 && <span className="opacity-40 mr-1.5">·</span>}
+          {p}
         </span>
-      </div>
-      <h3
-        className="text-sm font-bold mb-1.5 t-sans-white"
-      >
-        {block.title}
-      </h3>
-      <p
-        className="text-xs italic leading-relaxed t-serif text-white/75"
-      >
-        {block.description}
-      </p>
+      ))}
     </div>
   );
 }
 
-function buildFeed(spots: Spot[]): FeedEntry[] {
-  // Interleave: seasonal, 3 spots, seasonal, 4 spots, seasonal, 4 spots, seasonal, rest
-  const feed: FeedEntry[] = [];
-  const counts = [3, 4, 4];
-  let spotIdx = 0;
-
-  for (let i = 0; i < SEASONAL_BLOCKS.length; i++) {
-    feed.push(SEASONAL_BLOCKS[i]);
-    const take = counts[i] ?? spots.length;
-    const slice = spots.slice(spotIdx, spotIdx + take);
-    slice.forEach((s) => feed.push({ type: "spot", spot: s }));
-    spotIdx += take;
-  }
-
-  // Remaining spots after the last seasonal block
-  spots.slice(spotIdx).forEach((s) => feed.push({ type: "spot", spot: s }));
-
-  return feed;
+function SectionHeader({ emoji, title }: { emoji: string; title: string }) {
+  return (
+    <div className="flex items-center gap-2 mb-2">
+      <span className="text-sm">{emoji}</span>
+      <h3 className="text-[10px] font-bold uppercase tracking-widest t-sans-navy">{title}</h3>
+    </div>
+  );
 }
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 
 type WhatsNewTabProps = {
   spots?: Spot[];
@@ -106,87 +67,212 @@ type WhatsNewTabProps = {
   onSelectSpot?: (spot: Spot) => void;
 };
 
-export function WhatsNewTab({ spots: parentSpots, loading: parentLoading, onSelectSpot }: WhatsNewTabProps = {}) {
-  const [ownSpots, setOwnSpots] = useState<Spot[]>([]);
-  const [ownLoading, setOwnLoading] = useState(parentSpots === undefined);
-  const [activeCategory, setActiveCategory] = useState<CategoryFilter>("All");
+export function WhatsNewTab({ spots, onSelectSpot }: WhatsNewTabProps) {
+  const [dispatch, setDispatch] = useState<DispatchContent | null>(null);
+  const [dispatchLoading, setDispatchLoading] = useState(true);
+  const [dispatchError, setDispatchError] = useState(false);
 
-  const spots = parentSpots ?? ownSpots;
-  const loading = parentSpots !== undefined ? (parentLoading ?? false) : ownLoading;
-
-  // parentSpots is intentionally excluded from deps — we only want this to run
-  // on mount when spots weren't provided by the parent. Adding parentSpots would
-  // cause redundant fetches on every parent re-render.
-  const hasParentSpots = parentSpots !== undefined;
   useEffect(() => {
-    if (!hasParentSpots) {
-      getRecentSpots(30).then((data) => {
-        setOwnSpots(data as Spot[]);
-        setOwnLoading(false);
+    fetch("/api/dispatch/today")
+      .then((res) => {
+        if (!res.ok) throw new Error("No dispatch");
+        return res.json();
+      })
+      .then((data) => {
+        if (data.dispatch) setDispatch(data.dispatch);
+        else setDispatchError(true);
+        setDispatchLoading(false);
+      })
+      .catch(() => {
+        setDispatchError(true);
+        setDispatchLoading(false);
       });
-    }
-  }, [hasParentSpots]);
+  }, []);
 
-  const feed = buildFeed(
-    activeCategory === "All" ? spots : spots.filter((s) => s.category === activeCategory)
-  );
+  // Loading skeleton
+  if (dispatchLoading) {
+    return (
+      <div className="flex flex-col h-full overflow-y-auto">
+        <div className="px-4 py-4 bg-navy">
+          <div className="h-4 w-48 rounded bg-white/10 animate-pulse mb-2" />
+          <div className="h-6 w-56 rounded bg-white/10 animate-pulse" />
+        </div>
+        <div className="flex flex-col gap-4 p-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="rounded-sm bg-[#e0e0e0] animate-pulse h-20" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Error / no dispatch — show fallback
+  if (dispatchError || !dispatch) {
+    return (
+      <div className="flex flex-col h-full overflow-y-auto">
+        <div className="px-4 py-4 bg-navy border-b border-white/10">
+          <h2 className="text-lg font-black uppercase tracking-tight text-white t-sans">
+            The Dispatch
+          </h2>
+          <p className="text-xs italic text-white/60 mt-0.5 t-serif">
+            Your daily Boston briefing
+          </p>
+        </div>
+        <div className="p-6 text-center">
+          <p className="text-sm italic t-serif-gray mb-6">
+            Today&apos;s dispatch is on its way. Check back after 7am.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 px-4 pb-6">
+          {FALLBACK_BLOCKS.map((b) => (
+            <div key={b.id} className="p-4 rounded-sm bg-navy">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">{b.emoji}</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest t-sans text-white/40">Seasonal</span>
+              </div>
+              <h3 className="text-sm font-bold mb-1.5 t-sans-white">{b.title}</h3>
+              <p className="text-xs italic leading-relaxed t-serif text-white/75">{b.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Rendered Dispatch ───────────────────────────────────────────────────
+
+  function handleSpotTap() {
+    if (dispatch?.todaysSpot?.spotId && spots && onSelectSpot) {
+      const match = spots.find((s) => s.id === dispatch.todaysSpot.spotId);
+      if (match) onSelectSpot(match);
+    }
+  }
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
-      {/* Header */}
-      <div className="px-4 py-4 border-b border-[#e0e0e0] bg-navy">
-        <h2
-          className="text-lg font-black uppercase tracking-tight text-white t-sans"
-        >
-          Community
-        </h2>
-        <p
-          className="text-xs italic text-white opacity-60 mt-0.5 t-serif"
-        >
-          Community-submitted spots and seasonal picks
+      {/* Banner */}
+      <BannerStrip banner={dispatch.banner} />
+
+      {/* Date header */}
+      <div className="px-4 pt-4 pb-3 bg-navy border-b border-white/10">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-white/50 t-sans mb-1">
+          {dispatch.date}
         </p>
+        <h2 className="text-xl font-black uppercase tracking-tight text-white t-sans">
+          The Boston Dispatch
+        </h2>
       </div>
 
-      {/* Category filter */}
-      <div className="py-2 bg-boston-gray-50 border-b border-[#e0e0e0]">
-        <CategoryFilterBar
-          active={activeCategory}
-          onChange={(cat) => setActiveCategory(cat === activeCategory ? "All" : cat)}
-        />
-      </div>
+      <div className="flex flex-col gap-0 pb-6">
+        {/* Intro */}
+        <div className="px-4 py-4 border-b border-[#e0e0e0]">
+          <p className="text-sm italic leading-relaxed t-serif-body">{dispatch.intro}</p>
+        </div>
 
-      <div className="flex flex-col gap-3 p-4">
-        {loading ? (
-          <>
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="rounded-sm bg-[#e0e0e0] animate-pulse h-28" />
-            ))}
-          </>
-        ) : spots.length === 0 ? (
-          <>
-            {SEASONAL_BLOCKS.map((b) => (
-              <SeasonalBlockCard key={b.id} block={b} />
-            ))}
-            <div className="py-8 text-center">
-              <p
-                className="text-sm font-bold uppercase tracking-widest mb-2 t-sans-navy"
-              >
-                Nothing submitted yet.
-              </p>
-              <p
-                className="text-sm italic t-serif-gray"
-              >
-                Go be the first person to rep your neighborhood.
-              </p>
+        {/* What You Missed */}
+        {dispatch.whatYouMissed.length > 0 && (
+          <div className="px-4 py-4 border-b border-[#e0e0e0]">
+            <SectionHeader emoji="📰" title="What You Missed" />
+            <div className="flex flex-col gap-2">
+              {dispatch.whatYouMissed.map((item, i) => (
+                <a
+                  key={i}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs leading-snug t-sans-navy hover:underline block"
+                >
+                  <span className="text-boston-gray-400 mr-1.5">·</span>
+                  {item.headline}
+                  <span className="text-boston-blue ml-1">→</span>
+                </a>
+              ))}
             </div>
-          </>
-        ) : (
-          feed.map((entry) => {
-            if (entry.type === "seasonal") {
-              return <SeasonalBlockCard key={entry.id} block={entry} />;
-            }
-            return <SpotFeedCard key={entry.spot.id} spot={entry.spot} onClick={onSelectSpot} />;
-          })
+          </div>
+        )}
+
+        {/* Last Night */}
+        {dispatch.lastNight && dispatch.lastNight.length > 0 && (
+          <div className="px-4 py-4 border-b border-[#e0e0e0]">
+            <SectionHeader emoji="⚾" title="Last Night" />
+            <div className="flex flex-col gap-3">
+              {dispatch.lastNight.map((game, i) => (
+                <div key={i} className="p-3 rounded-sm bg-boston-gray-50">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold t-sans-navy">{game.team}</span>
+                    <span className={`text-[10px] font-bold uppercase tracking-widest t-sans ${game.result.startsWith("Won") ? "text-[#007A33]" : "text-boston-red"}`}>
+                      {game.result}
+                    </span>
+                  </div>
+                  <p className="text-xs italic t-serif-body">{game.summary}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Get Around Today */}
+        {dispatch.getAroundToday && (
+          <div className="px-4 py-4 border-b border-[#e0e0e0]">
+            <SectionHeader emoji="🚇" title="Get Around Today" />
+            <p className="text-xs italic t-serif-body">{dispatch.getAroundToday}</p>
+          </div>
+        )}
+
+        {/* Tonight */}
+        {dispatch.tonight.length > 0 && (
+          <div className="px-4 py-4 border-b border-[#e0e0e0]">
+            <SectionHeader emoji="🌆" title="Tonight" />
+            <div className="flex flex-col gap-2">
+              {dispatch.tonight.map((ev, i) => (
+                <div key={i}>
+                  <p className="text-xs font-bold t-sans-navy">{ev.title}</p>
+                  <p className="text-[11px] italic t-serif-body">{ev.detail}</p>
+                  {ev.url && (
+                    <a href={ev.url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold t-sans-blue hover:underline">
+                      Details →
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Today's Spot */}
+        <div
+          className={`px-4 py-4 border-b border-[#e0e0e0] ${dispatch.todaysSpot.spotId ? "cursor-pointer hover:bg-boston-gray-50" : ""}`}
+          onClick={handleSpotTap}
+        >
+          <SectionHeader emoji="📍" title="Today's Spot" />
+          <p className="text-sm font-bold t-sans-navy">{dispatch.todaysSpot.name}</p>
+          <p className="text-[10px] uppercase tracking-widest t-sans-gray mb-1">
+            {dispatch.todaysSpot.neighborhood}
+          </p>
+          <p className="text-xs italic t-serif-body">{dispatch.todaysSpot.reason}</p>
+        </div>
+
+        {/* On This Day */}
+        <div className="px-4 py-4 border-b border-[#e0e0e0]">
+          <SectionHeader emoji="🗓" title="On This Day" />
+          <p className="text-xs italic t-serif-body">{dispatch.onThisDay}</p>
+        </div>
+
+        {/* The Number */}
+        <div className="px-4 py-4">
+          <SectionHeader emoji="🔢" title="The Number" />
+          <div className="flex items-baseline gap-3">
+            <span className="text-3xl font-black t-sans-navy">{dispatch.theNumber.number}</span>
+            <p className="text-xs italic t-serif-body flex-1">{dispatch.theNumber.context}</p>
+          </div>
+        </div>
+
+        {/* Weather Watch */}
+        {dispatch.weatherWatch && (
+          <div className="px-4 py-4 border-t border-[#e0e0e0]">
+            <SectionHeader emoji="⛈️" title="Weather Watch" />
+            <p className="text-xs italic t-serif-body">{dispatch.weatherWatch}</p>
+          </div>
         )}
       </div>
     </div>

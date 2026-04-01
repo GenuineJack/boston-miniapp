@@ -44,6 +44,7 @@ export const spots = pgTable("spots", {
   featured: boolean("featured").default(false).notNull(),
   status: text("status").default("approved").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  touristPick: boolean("tourist_pick").default(false).notNull(),
 });
 
 /**
@@ -100,4 +101,15 @@ export const submissionErrors = pgTable("submission_errors", {
   errorMessage: text("error_message").notNull(),
   userFid: integer("user_fid"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+/**
+ * Dispatch table — daily AI-generated editorial newsletter
+ */
+export const dispatch = pgTable("dispatch", {
+  id: text("id").primaryKey(),
+  date: text("date").notNull().unique(), // YYYY-MM-DD, unique per day
+  content: text("content").notNull(),    // JSON string of structured dispatch
+  generatedAt: timestamp("generated_at").defaultNow().notNull(),
+  adminOverride: boolean("admin_override").default(false).notNull(),
 });

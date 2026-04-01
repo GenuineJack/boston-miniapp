@@ -5,6 +5,7 @@ import { Spot, CategoryFilter, NEIGHBORHOODS } from "@/features/boston/types";
 import { SpotCard } from "@/features/boston/components/spot-card";
 import { CategoryFilterBar } from "@/features/boston/components/category-filter";
 import { MapView } from "@/features/boston/components/map-view";
+import { getTimeContext, TIME_CONTEXT_CATEGORY_WEIGHT } from "@/features/boston/utils/time-context";
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -54,7 +55,7 @@ export function ExploreTab({
 
   // Derive filtered list from props + search query
   const filtered = spots.filter((s) => {
-    const catOk = activeCategory === "All" || s.category === activeCategory;
+    const catOk = activeCategory === "All" || activeCategory === "Tourist Picks" ? (activeCategory === "All" || s.touristPick) : s.category === activeCategory;
     const nbrOk = !neighborhoodFilter || (() => {
       const neighborhood = NEIGHBORHOODS.find((n) => n.id === neighborhoodFilter);
       return neighborhood ? s.neighborhood === neighborhood.name : true;
@@ -72,6 +73,20 @@ export function ExploreTab({
     return catOk && nbrOk && submitterOk && searchOk;
   });
 
+  // Soft time-of-day category weighting — nudges relevant categories to the top
+  const timeCtx = getTimeContext();
+  const weightedCategories = TIME_CONTEXT_CATEGORY_WEIGHT[timeCtx];
+  const sortedFiltered = weightedCategories.length > 0
+    ? [...filtered].sort((a, b) => {
+        const aIdx = weightedCategories.indexOf(a.category);
+        const bIdx = weightedCategories.indexOf(b.category);
+        if (aIdx === -1 && bIdx === -1) return 0;
+        if (aIdx === -1) return 1;
+        if (bIdx === -1) return -1;
+        return aIdx - bIdx;
+      })
+    : filtered;
+
   function isNew(spot: Spot) {
     return Date.now() - new Date(spot.createdAt).getTime() < ONE_WEEK_MS;
   }
@@ -86,7 +101,7 @@ export function ExploreTab({
       <div
         className={mapCollapsed ? "map-container-collapsed" : "map-container"}
       >
-        <MapView spots={filtered} onSpotClick={onSelectSpot} />
+        <MapView spots={sortedFiltered} onSpotClick={onSelectSpot} />
       </div>
 
       {/* Show map bar when collapsed */}
@@ -134,6 +149,16 @@ export function ExploreTab({
           >
             × Clear
           </button>
+        </div>
+      )}
+
+      {/* Tourist Picks / Visitor mode banner */}
+      {activeCategory === "Tourist Picks" && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-[#1871bd]">
+          <span className="text-sm">✈️</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-white t-sans">
+            Visitor Mode — Local-approved picks for out-of-towners
+          </span>
         </div>
       )}
 
@@ -191,7 +216,7 @@ export function ExploreTab({
               Check your connection and try refreshing.
             </p>
           </div>
-        ) : filtered.length === 0 ? (
+        ) : sortedFiltered.length === 0 ? (
           <div className="p-8 text-center">
             <p
               className="text-sm font-bold uppercase tracking-widest mb-2 t-sans-navy"
@@ -212,7 +237,7 @@ export function ExploreTab({
           </div>
         ) : (
           <div className="flex flex-col gap-3 p-4">
-            {filtered.map((spot) => (
+            {sortedFiltered.map((spot) => (
               <SpotCard
                 key={spot.id}
                 spot={spot}

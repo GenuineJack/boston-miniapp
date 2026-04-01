@@ -11,8 +11,15 @@ export type WeatherData = {
   updatedAt: string;
 };
 
+export type MbtaAlert = {
+  text: string;
+  routes: string[];
+  severity: number;
+};
+
 export type WeatherCache = {
   data: WeatherData;
+  mbtaAlert?: MbtaAlert | null;
   timestamp: number;
 } | null;
 
@@ -66,6 +73,26 @@ export function isWeatherCacheFresh(cache: WeatherCache): boolean {
   return Date.now() - cache.timestamp < CACHE_TTL_MS;
 }
 
+export async function fetchMbtaAlert(): Promise<MbtaAlert | null> {
+  try {
+    const res = await fetch("/api/mbta");
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.alert ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function shortenMbtaAlert(text: string): string {
+  // Shorten common MBTA alert patterns for the one-line strip
+  return text
+    .replace(/Shuttle buses replacing .+ service /i, "Shuttle replacing ")
+    .replace(/Delays of .+ minutes? /i, "Delays ")
+    .slice(0, 60)
+    .trim();
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 // Stateless — all data and state come from props managed by TodayTab.
 
@@ -74,9 +101,11 @@ type WeatherStripProps = {
   loading: boolean;
   error: boolean;
   todayLabel: string;
+  mbtaAlert?: MbtaAlert | null;
+  countdown?: string | null;
 };
 
-export function WeatherStrip({ weather, loading, error, todayLabel }: WeatherStripProps) {
+export function WeatherStrip({ weather, loading, error, todayLabel, mbtaAlert, countdown }: WeatherStripProps) {
   const [bostonTime, setBostonTime] = useState(() =>
     new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true })
   );
@@ -94,6 +123,24 @@ export function WeatherStrip({ weather, loading, error, todayLabel }: WeatherStr
     <div
       className="shrink-0 px-4 py-3 bg-navy-bar"
     >
+      {/* Context strip — one-line weather + MBTA + countdown */}
+      {!loading && weather && (mbtaAlert || countdown) && (
+        <div className="text-[10px] text-white/70 mb-2 t-sans flex items-center gap-1.5 flex-wrap">
+          <span>{weather.emoji} {weather.tempF}°F</span>
+          {mbtaAlert && (
+            <>
+              <span className="opacity-40">·</span>
+              <span>🚇 {shortenMbtaAlert(mbtaAlert.text)}</span>
+            </>
+          )}
+          {countdown && (
+            <>
+              <span className="opacity-40">·</span>
+              <span>{countdown}</span>
+            </>
+          )}
+        </div>
+      )}
       {loading ? (
         <div className="flex items-center justify-between animate-pulse">
           <div>

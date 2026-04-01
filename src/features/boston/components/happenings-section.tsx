@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Happening, CommunityHappening } from "@/features/boston/types";
+import type { EventItem } from "@/app/api/events/route";
 
 // ─── Happening definitions ────────────────────────────────────────────────────
 // Each entry has date window logic and a dynamic timing label function.
@@ -389,7 +390,7 @@ const HAPPENING_DEFS: HappeningDef[] = [
   {
     id: "world-cup-2026",
     title: "FIFA World Cup 2026 — Boston Host City",
-    description: "Boston is hosting World Cup matches at Gillette Stadium in Foxborough. Five group stage matches and a Round of 16 game, June through July 2026. One of 16 North American host cities. The biggest sporting event on the planet is coming to Greater Boston.",
+    description: "Gillette Stadium — renamed Boston Stadium for the tournament — hosts seven matches from June 13 through a quarterfinal on July 9. England, France, Scotland, Norway, Morocco, Ghana, and Haiti all play here. The biggest sporting event on the planet is coming to Greater Boston.",
     relatedNeighborhood: "south-shore-cape",
     emoji: "⚽",
     isActive: (today) => {
@@ -398,9 +399,11 @@ const HAPPENING_DEFS: HappeningDef[] = [
       return today >= start && today <= end;
     },
     timingLabel: (today) => {
-      const firstMatch = new Date(2026, 5, 15);
+      const firstMatch = new Date(2026, 5, 13);
+      const lastMatch = new Date(2026, 6, 9);
       const d = Math.round((firstMatch.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      if (d <= 0) return "HAPPENING NOW";
+      if (today >= firstMatch && today <= lastMatch) return "HAPPENING NOW";
+      if (d <= 0) return "MATCHES COMPLETE";
       if (d <= 30) return `FIRST MATCH IN ${d} DAYS`;
       if (d <= 60) return "COMING THIS SUMMER";
       return "SUMMER 2026";
@@ -428,16 +431,21 @@ function getActiveHappenings(today: Date): (Happening & { computed: true })[] {
 
 type Props = {
   onNavigateToNeighborhood?: (neighborhoodId: string) => void;
+  onOpenWorldCup?: () => void;
   communityHappenings?: CommunityHappening[];
 };
 
 function CuratedCard({
   happening,
   onNavigateToNeighborhood,
+  onOpenWorldCup,
 }: {
   happening: Happening;
   onNavigateToNeighborhood?: (id: string) => void;
+  onOpenWorldCup?: () => void;
 }) {
+  const isWorldCup = happening.id === "world-cup-2026";
+
   return (
     <div className="rounded-sm bg-boston-gray-50 happening-card">
       <p className="uppercase mb-2 t-sans-blue happening-timing">
@@ -449,14 +457,21 @@ function CuratedCard({
       <p className="italic leading-relaxed mb-3 t-serif-body happening-desc">
         {happening.description}
       </p>
-      {onNavigateToNeighborhood && (
+      {isWorldCup && onOpenWorldCup ? (
+        <button
+          onClick={onOpenWorldCup}
+          className="text-left transition-opacity duration-150 hover:opacity-70 t-sans-blue happening-link"
+        >
+          ⚽ Full World Cup Guide →
+        </button>
+      ) : onNavigateToNeighborhood ? (
         <button
           onClick={() => onNavigateToNeighborhood(happening.relatedNeighborhood)}
           className="text-left transition-opacity duration-150 hover:opacity-70 t-sans-blue happening-link"
         >
           📍 See spots in this neighborhood →
         </button>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -518,13 +533,91 @@ function CommunityCard({ happening }: { happening: CommunityHappening }) {
   );
 }
 
-export function HappeningsSection({ onNavigateToNeighborhood, communityHappenings = [] }: Props) {
+function EventCard({ event }: { event: EventItem }) {
+  const CATEGORY_EMOJI: Record<string, string> = {
+    city: "🏛️",
+    arts: "🎭",
+    music: "🎵",
+    community: "🤝",
+    tech: "💻",
+  };
+
+  function eventTimeAgo(dateStr: string): string {
+    if (!dateStr) return "";
+    try {
+      const diff = Date.now() - new Date(dateStr).getTime();
+      if (isNaN(diff)) return "";
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      if (hours < 1) return "just now";
+      if (hours < 24) return `${hours}h ago`;
+      return `${Math.floor(hours / 24)}d ago`;
+    } catch { return ""; }
+  }
+
+  return (
+    <a
+      href={event.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block rounded-sm bg-white p-3 no-underline text-inherit border border-boston-gray-100 transition-colors hover:bg-boston-gray-50"
+    >
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[10px] font-bold uppercase tracking-widest t-sans-blue">
+          {CATEGORY_EMOJI[event.category] ?? "📅"} {event.source}
+        </span>
+        {eventTimeAgo(event.date) && (
+          <span className="text-[10px] t-sans-gray">{eventTimeAgo(event.date)}</span>
+        )}
+      </div>
+      <p className="text-xs font-bold leading-tight t-sans-navy mb-1">{event.title}</p>
+      {event.description && (
+        <p className="text-[10px] leading-relaxed t-serif-gray line-clamp-2">{event.description}</p>
+      )}
+    </a>
+  );
+}
+
+export function HappeningsSection({ onNavigateToNeighborhood, onOpenWorldCup, communityHappenings = [] }: Props) {
   // Stable date — doesn't need to update mid-session, and avoids recalculating
   // all the happening date windows on every parent re-render.
   const today = useMemo(() => new Date(), []);
   const curated = useMemo(() => getActiveHappenings(today), [today]);
 
-  if (curated.length === 0 && communityHappenings.length === 0) return null;
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [sourceFilter, setSourceFilter] = useState<string>("All");
+
+  useEffect(() => {
+    fetch("/api/events")
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data: { items: EventItem[] }) => {
+        setEvents(data.items ?? []);
+        setEventsLoading(false);
+      })
+      .catch(() => setEventsLoading(false));
+  }, []);
+
+  const SOURCE_FILTERS = [
+    { id: "All", label: "All" },
+    { id: "city", label: "City Events" },
+    { id: "arts", label: "Arts" },
+    { id: "music", label: "Music" },
+    { id: "community", label: "Community" },
+  ];
+
+  const EXPLORE_MORE = [
+    { name: "Do617", url: "https://do617.com" },
+    { name: "Luma Boston", url: "https://lu.ma/boston" },
+    { name: "Mass AI Coalition", url: "https://www.massai.org" },
+    { name: "MassTech", url: "https://masstech.org" },
+    { name: "City of Boston", url: "https://www.boston.gov/events" },
+  ];
+
+  const filteredEvents = sourceFilter === "All"
+    ? events
+    : events.filter((e) => e.category === sourceFilter);
+
+  if (curated.length === 0 && communityHappenings.length === 0 && events.length === 0) return null;
 
   return (
     <div className="px-4 mt-6">
@@ -539,6 +632,25 @@ export function HappeningsSection({ onNavigateToNeighborhood, communityHappening
         </span>
       </div>
 
+      {/* Source filter pills */}
+      {events.length > 0 && (
+        <div className="flex gap-1.5 overflow-x-auto pb-2 mb-3 -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
+          {SOURCE_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setSourceFilter(f.id)}
+              className={`shrink-0 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest cursor-pointer border-none transition-colors ${
+                sourceFilter === f.id
+                  ? "bg-boston-blue text-white"
+                  : "bg-boston-gray-100 t-sans-gray"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="flex flex-col gap-3">
         {/* Community submissions first — most timely */}
         {communityHappenings.map((h) => (
@@ -546,9 +658,43 @@ export function HappeningsSection({ onNavigateToNeighborhood, communityHappening
         ))}
         {/* Curated editorial cards */}
         {curated.map((h) => (
-          <CuratedCard key={h.id} happening={h} onNavigateToNeighborhood={onNavigateToNeighborhood} />
+          <CuratedCard key={h.id} happening={h} onNavigateToNeighborhood={onNavigateToNeighborhood} onOpenWorldCup={onOpenWorldCup} />
+        ))}
+
+        {/* RSS event feed items */}
+        {eventsLoading && (
+          <div className="flex flex-col gap-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 rounded-sm bg-boston-gray-100 animate-pulse" />
+            ))}
+          </div>
+        )}
+        {filteredEvents.slice(0, 8).map((evt, i) => (
+          <EventCard key={`${evt.source}-${i}`} event={evt} />
         ))}
       </div>
+
+      {/* Explore More */}
+      {events.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-boston-gray-100">
+          <p className="text-[10px] font-bold uppercase tracking-widest t-sans-gray mb-2">
+            Explore More Events
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {EXPLORE_MORE.map((link) => (
+              <a
+                key={link.name}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-full bg-boston-gray-50 text-[10px] font-bold t-sans-blue no-underline hover:bg-boston-gray-100 transition-colors"
+              >
+                {link.name} ↗
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

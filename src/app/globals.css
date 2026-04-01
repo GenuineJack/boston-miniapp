@@ -1054,3 +1054,31 @@
 .animate-marquee {
   animation: marquee 20s linear infinite;
 }
+
+/* ── City Builder landing page ── */
+#city-builders {
+  background-color: var(--white);
+  color: var(--primary-navy);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+#city-builders h1,
+#city-builders h2,
+#city-builders h3 {
+  color: var(--primary-navy);
+}
+
+#city-builders a:not([class*="btn"]):not([class*="onboarding"]) {
+  color: var(--alert-red);
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  #city-builders {
+    max-width: 100%;
+    padding: 10px;
+  }
+}

@@ -21,11 +21,12 @@ function getClient() {
  * Uses timing-safe comparison to prevent timing attacks.
  */
 export async function verifyAdminSecret(secret: string): Promise<boolean> {
-  const adminSecret = process.env.ADMIN_SECRET;
-  if (!adminSecret || !secret) return false;
-  if (secret.length !== adminSecret.length) return false;
+  const adminSecret = process.env.ADMIN_SECRET?.trim();
+  const trimmedSecret = secret.trim();
+  if (!adminSecret || !trimmedSecret) return false;
+  if (trimmedSecret.length !== adminSecret.length) return false;
   try {
-    return timingSafeEqual(Buffer.from(secret), Buffer.from(adminSecret));
+    return timingSafeEqual(Buffer.from(trimmedSecret), Buffer.from(adminSecret));
   } catch {
     return false;
   }

@@ -305,6 +305,18 @@ type SportsRowProps = {
 };
 
 export function SportsRow({ games, loading, fetchFailed, onTeamClick }: SportsRowProps) {
+  // Build a set of teams that have games in the data
+  const teamsWithGames = new Set(games.map((g) => g.team));
+
+  // All ESPN teams should always be visible
+  const allEspnTeams: { team: string; emoji: string }[] = [
+    { team: "Celtics", emoji: "🏀" },
+    { team: "Bruins", emoji: "🏒" },
+    { team: "Red Sox", emoji: "⚾" },
+    { team: "Patriots", emoji: "🏈" },
+    { team: "Revolution", emoji: "⚽" },
+  ];
+
   return (
     <div className="px-4 mt-6">
       {/* Section header */}
@@ -325,53 +337,65 @@ export function SportsRow({ games, loading, fetchFailed, onTeamClick }: SportsRo
 
       {loading ? (
         <SportsSkeleton />
-      ) : fetchFailed ? (
-        <div
-          className="flex items-center justify-center px-4 py-5 bg-white box-bordered"
-        >
-          <p
-            className="italic text-center t-serif-gray text-[13px]"
-          >
-            Scores unavailable. ESPN might be having a moment.
-          </p>
-        </div>
-      ) : games.length === 0 ? (
-        <div
-          className="flex items-center justify-center px-4 py-5 bg-white box-bordered"
-        >
-          <p
-            className="italic text-center t-serif-gray text-[13px]"
-          >
-            No games in the next 48 hours. Rest up, Boston.
-          </p>
-        </div>
       ) : (
-        <div
-          className="flex gap-3 overflow-x-auto pb-2 no-scrollbar"
-        >
-          {games.map((game) => (
-            <GameCard key={game.id} game={game} onClick={() => onTeamClick?.(game.team)} />
-          ))}
+        <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+          {/* ESPN teams — always show all, with game data when available */}
+          {allEspnTeams.map(({ team, emoji }) => {
+            const teamGames = games.filter((g) => g.team === team);
+            if (teamGames.length > 0) {
+              return teamGames.map((game) => (
+                <GameCard key={game.id} game={game} onClick={() => onTeamClick?.(game.team)} />
+              ));
+            }
+            // No game in next 48h — show placeholder card
+            const inSeason = isLeagueActive(
+              BOSTON_TEAMS.find((t) => t.team === team)?.league ?? ""
+            );
+            return (
+              <button
+                key={team}
+                onClick={() => onTeamClick?.(team)}
+                className="shrink-0 flex flex-col justify-between p-3 bg-white game-card text-left cursor-pointer hover:bg-boston-gray-50 transition-colors"
+              >
+                <div>
+                  <p className="font-bold uppercase leading-tight t-sans-navy game-team">
+                    {emoji} {team}
+                  </p>
+                </div>
+                <p className="uppercase leading-tight t-sans text-boston-gray-400 game-status">
+                  {inSeason ? "No game scheduled" : "Off-season"}
+                </p>
+              </button>
+            );
+          })}
+
+          {/* Non-ESPN teams — always show */}
+          {NON_ESPN_TEAMS.map((team) => {
+            const inSeason = team.activeMonths.includes(new Date().getMonth());
+            return (
+              <a
+                key={team.name}
+                href={team.scheduleUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 flex flex-col justify-between p-3 bg-white game-card text-left cursor-pointer hover:bg-boston-gray-50 transition-colors"
+              >
+                <div>
+                  <p className="font-bold uppercase leading-tight t-sans-navy game-team">
+                    {team.emoji} {team.name}
+                  </p>
+                  <p className="italic leading-snug t-serif-body game-opponent">
+                    {team.sport}
+                  </p>
+                </div>
+                <p className="uppercase leading-tight t-sans text-boston-gray-400 game-status">
+                  {inSeason ? "Schedule →" : "Off-season"}
+                </p>
+              </a>
+            );
+          })}
         </div>
       )}
-
-      {/* Non-ESPN teams — show during their season */}
-      {NON_ESPN_TEAMS.filter(t => t.activeMonths.includes(new Date().getMonth())).map((team) => (
-        <div key={team.name} className="mt-2 p-3 rounded-sm bg-boston-gray-50">
-          <p className="text-[10px] font-bold uppercase tracking-widest t-sans-navy">
-            {team.emoji} {team.fullName}
-          </p>
-          <p className="text-[11px] italic t-serif-body mt-0.5">{team.description}</p>
-          <a
-            href={team.scheduleUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] font-bold t-sans-blue hover:underline mt-1 inline-block"
-          >
-            Schedule →
-          </a>
-        </div>
-      ))}
     </div>
   );
 }

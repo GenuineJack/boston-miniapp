@@ -120,7 +120,7 @@ export function WhatsNewTab({ spots, onSelectSpot }: WhatsNewTabProps) {
         </div>
         <div className="p-6 text-center">
           <p className="text-sm italic t-serif-gray mb-6">
-            Today&apos;s dispatch is on its way. Check back after 7am.
+            Today&apos;s dispatch is on its way. Check back later.
           </p>
         </div>
         <div className="flex flex-col gap-3 px-4 pb-6">

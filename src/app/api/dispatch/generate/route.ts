@@ -43,6 +43,7 @@ type DispatchContent = {
     context: string;               // one sentence
   };
   weatherWatch?: string;           // only present if weather is newsworthy
+  todayIntro?: string;             // one-sentence editorial greeting for the Today tab (separate from newsletter intro)
 };`;
 
 const DISPATCH_SYSTEM_PROMPT = `You are the editorial voice of The Boston Dispatch — a daily morning newsletter for people who live in Boston. You write like a Bostonian with strong opinions: specific, dry when appropriate, warm when it matters, never promotional, never generic.
@@ -59,6 +60,8 @@ Voice guidelines:
 You will receive structured data about today in Boston. Use what's relevant. Skip sections with no real content (no games last night = lastNight should be null). Never make things up. If you don't have real URLs for news items, use the source URLs provided.
 
 Output format: You must respond with ONLY valid JSON matching the DispatchContent type. No preamble, no markdown, no explanation. Just the JSON object.
+
+The "todayIntro" field is a single-sentence editorial greeting that appears at the top of the Today tab (separate from the newsletter). It should be timely, opinionated, and reflect what's happening in Boston today — weather, events, sports, or just the vibe. Examples: "Patriots finally have a quarterback and the city can't shut up about it.", "Marathon Monday — hide your car, move your life, enjoy the chaos.", "48 degrees and raining in April. Classic."
 
 ${DISPATCH_TYPE_REFERENCE}`;
 
@@ -179,9 +182,8 @@ Write today's dispatch.
 
 // ─── Route Handler ───────────────────────────────────────────────────────────
 
-export async function POST(request: NextRequest) {
+async function generateDispatch(authHeader: string | null): Promise<NextResponse> {
   // Verify cron secret
-  const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
@@ -280,4 +282,14 @@ export async function POST(request: NextRequest) {
     console.error("[dispatch] Generation failed:", err);
     return NextResponse.json({ error: "Generation failed" }, { status: 500 });
   }
+}
+
+// Vercel cron jobs invoke GET requests
+export async function GET(request: NextRequest) {
+  return generateDispatch(request.headers.get("authorization"));
+}
+
+// Admin panel uses POST
+export async function POST(request: NextRequest) {
+  return generateDispatch(request.headers.get("authorization"));
 }

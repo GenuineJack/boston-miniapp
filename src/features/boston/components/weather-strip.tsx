@@ -123,16 +123,10 @@ export function WeatherStrip({ weather, loading, error, todayLabel, mbtaAlert, c
     <div
       className="shrink-0 px-4 py-3 bg-navy-bar"
     >
-      {/* Context strip — one-line weather + MBTA + countdown */}
-      {!loading && weather && (mbtaAlert || countdown) && (
+      {/* Context strip — one-line weather + countdown */}
+      {!loading && weather && countdown && (
         <div className="text-[10px] text-white/70 mb-2 t-sans flex items-center gap-1.5 flex-wrap">
           <span>{weather.emoji} {weather.tempF}°F</span>
-          {mbtaAlert && (
-            <>
-              <span className="opacity-40">·</span>
-              <span>🚇 {shortenMbtaAlert(mbtaAlert.text)}</span>
-            </>
-          )}
           {countdown && (
             <>
               <span className="opacity-40">·</span>

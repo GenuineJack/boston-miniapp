@@ -29,7 +29,7 @@ const TABS: { id: ActiveTab; label: string; icon: string; isCenter?: boolean }[]
 ];
 
 export function MiniApp({ initialSpots = [] }: { initialSpots?: Spot[] }) {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("explore");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("today");
   const [showSubmitOverlay, setShowSubmitOverlay] = useState(false);
   const [submitMode, setSubmitMode] = useState<SubmitMode>("picker");
 
@@ -216,7 +216,7 @@ export function MiniApp({ initialSpots = [] }: { initialSpots?: Spot[] }) {
 
         {/* Submit overlay */}
         {showSubmitOverlay && (
-          <div className="absolute inset-0 flex flex-col bg-boston-gray-50 z-50">
+          <div className="fixed inset-0 flex flex-col bg-boston-gray-50 z-[9999]">
             <div
               className="flex items-center justify-between px-4 py-3 shrink-0 bg-navy-bar"
             >

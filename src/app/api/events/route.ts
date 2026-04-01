@@ -88,11 +88,22 @@ export async function GET() {
     })
   );
 
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+
   const allEvents: EventItem[] = results
     .filter(
       (r): r is PromiseFulfilledResult<EventItem[]> => r.status === "fulfilled"
     )
     .flatMap((r) => r.value)
+    .filter((item) => {
+      // Filter out stale items older than 30 days
+      if (!item.date) return true;
+      try {
+        return new Date(item.date).getTime() >= thirtyDaysAgo;
+      } catch {
+        return true;
+      }
+    })
     .sort((a, b) => {
       try {
         return new Date(b.date).getTime() - new Date(a.date).getTime();

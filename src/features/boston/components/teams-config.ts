@@ -100,7 +100,7 @@ export const NON_ESPN_TEAMS: NonEspnTeam[] = [
     venue: "TD Garden",
     description: "Boston's WNBA expansion franchise begins play in 2026. The Fleet will play at TD Garden.",
     scheduleUrl: "https://fleet.wnba.com",
-    activeMonths: [4, 5, 6, 7, 8], // May–Sep
+    activeMonths: [3, 4, 5, 6, 7, 8], // Apr–Sep (WNBA 2026 expansion)
   },
   {
     name: "Free Jacks",

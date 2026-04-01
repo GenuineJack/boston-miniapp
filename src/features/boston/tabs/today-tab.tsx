@@ -11,6 +11,24 @@ import { NewsSection } from "@/features/boston/components/news-section";
 import { getTimeContext } from "@/features/boston/utils/time-context";
 import type { NewsItem } from "@/app/api/news/route";
 
+// ─── MBTA Scrolling Marquee ───────────────────────────────────────────────────
+
+function MbtaMarquee({ alert }: { alert: MbtaAlert | null }) {
+  if (!alert) return null;
+  return (
+    <div className="bg-boston-gray-50 border-b border-boston-gray-100 overflow-hidden whitespace-nowrap">
+      <div className="inline-flex animate-marquee py-1.5">
+        <span className="text-[11px] font-bold uppercase tracking-wide t-sans px-4" style={{ color: "#091f2f" }}>
+          🚇 MBTA Alert: {alert.text}
+        </span>
+        <span className="text-[11px] font-bold uppercase tracking-wide t-sans px-4" style={{ color: "#091f2f" }}>
+          🚇 MBTA Alert: {alert.text}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 type Props = {
   onNavigateToNeighborhood: (neighborhoodId: string) => void;
   onOpenWorldCup?: () => void;
@@ -43,9 +61,20 @@ export function TodayTab({
   const [mbtaAlert, setMbtaAlert] = useState<MbtaAlert | null>(
     weatherCache?.mbtaAlert ?? null,
   );
+  const [todayIntro, setTodayIntro] = useState<string | null>(null);
 
   useEffect(() => {
     getCommunityHappenings(20).then((data) => setCommunityHappenings(data as CommunityHappening[]));
+  }, []);
+
+  // Fetch the daily AI intro from the dispatch
+  useEffect(() => {
+    fetch("/api/dispatch/today")
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => {
+        if (data.dispatch?.todayIntro) setTodayIntro(data.dispatch.todayIntro);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -85,6 +114,12 @@ export function TodayTab({
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       <WeatherStrip weather={weatherData} loading={weatherLoading} error={weatherError} todayLabel={todayLabel} mbtaAlert={mbtaAlert} />
+      <MbtaMarquee alert={mbtaAlert} />
+      {todayIntro && (
+        <div className="px-4 py-2.5 border-b border-boston-gray-100 bg-white">
+          <p className="text-[13px] italic leading-snug t-serif-body">{todayIntro}</p>
+        </div>
+      )}
       <div className="flex flex-col pb-6">
         {sportsFirst ? (
           <>{sportsSection}{newsSection}{happeningsSection}</>

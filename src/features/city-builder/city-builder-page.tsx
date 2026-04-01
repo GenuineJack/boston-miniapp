@@ -12,10 +12,10 @@ import { BuilderFooter } from "@/features/city-builder/components/builder-footer
 
 export function CityBuilderPage() {
   return (
-    <div className="min-h-screen bg-[var(--white)]">
+    <div id="city-builders" className="min-h-screen">
       <SketchFilters />
 
-      <div className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-16">
+      <div className="flex flex-col gap-16 py-8">
         <HeroSection />
         <FeaturesGrid />
         <HowItWorks />

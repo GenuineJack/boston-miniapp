@@ -22,7 +22,7 @@ export async function generateMetadata({
 }
 
 export default async function Home() {
-  let initialSpots;
+  let initialSpots: Awaited<ReturnType<typeof getSpots>> = [];
   try {
     initialSpots = await getSpots();
   } catch {

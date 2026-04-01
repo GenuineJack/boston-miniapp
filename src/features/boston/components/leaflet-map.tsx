@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Map as LeafletMap } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Spot } from "@/features/boston/types";
@@ -39,6 +39,7 @@ export function LeafletMapInner({ spots, onSpotClick, height, center, zoom }: Le
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<import("leaflet").CircleMarker[]>([]);
+  const [mapReady, setMapReady] = useState(false);
 
   // Initialise map once on mount
   useEffect(() => {
@@ -63,6 +64,7 @@ export function LeafletMapInner({ spots, onSpotClick, height, center, zoom }: Le
       });
 
       mapRef.current = map;
+      setMapReady(true);
 
       // CARTO Dark Matter — free, no API key, dark theme
       L.tileLayer(
@@ -125,7 +127,7 @@ export function LeafletMapInner({ spots, onSpotClick, height, center, zoom }: Le
         markersRef.current.push(marker);
       }
     });
-  }, [spots, onSpotClick]);
+  }, [spots, onSpotClick, mapReady]);
 
   return (
     <>

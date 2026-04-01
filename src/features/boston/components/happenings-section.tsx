@@ -447,8 +447,8 @@ function CuratedCard({
   const isWorldCup = happening.id === "world-cup-2026";
 
   return (
-    <div className="rounded-sm bg-boston-gray-50 happening-card">
-      <p className="uppercase mb-2 t-sans-blue happening-timing">
+    <div className={`rounded-sm happening-card ${isWorldCup ? "border-2 border-boston-blue bg-gradient-to-br from-boston-gray-50 to-blue-50" : "bg-boston-gray-50"}`}>
+      <p className={`uppercase mb-2 happening-timing ${isWorldCup ? "t-sans text-boston-blue font-black" : "t-sans-blue"}`}>
         {happening.emoji} {happening.timing}
       </p>
       <h3 className="font-bold leading-tight mb-2 t-sans-navy happening-title">
@@ -675,8 +675,7 @@ export function HappeningsSection({ onNavigateToNeighborhood, onOpenWorldCup, co
       </div>
 
       {/* Explore More */}
-      {events.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-boston-gray-100">
+      <div className="mt-4 pt-3 border-t border-boston-gray-100">
           <p className="text-[10px] font-bold uppercase tracking-widest t-sans-gray mb-2">
             Explore More Events
           </p>
@@ -694,7 +693,6 @@ export function HappeningsSection({ onNavigateToNeighborhood, onOpenWorldCup, co
             ))}
           </div>
         </div>
-      )}
     </div>
   );
 }

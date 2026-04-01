@@ -48,7 +48,7 @@ export const TEAM_METADATA: Record<string, TeamMetadata> = {
     venueCoords: [42.3467, -71.0972],
     bio: "Fenway Park opened in 1912 and it's still the best place to watch a baseball game. The Green Monster, Pesky's Pole, the manual scoreboard. 2004 broke the curse — reverse sweep against the Yankees in the ALCS, then a World Series that made grown adults weep in the street. Three more titles since. Sweet Caroline in the 8th.",
     championships: ["2018", "2013", "2007", "2004", "1918", "1916", "1915", "1912", "1903"],
-    scheduleUrl: "https://www.mlb.com/redsox/schedule",
+    scheduleUrl: "https://www.mlb.com/red-sox/schedule",
     founded: 1901,
     colors: "Red, White & Blue",
   },
@@ -94,13 +94,13 @@ export type NonEspnTeam = {
 export const NON_ESPN_TEAMS: NonEspnTeam[] = [
   {
     name: "Fleet",
-    emoji: "🏀",
-    fullName: "Boston Fleet (WNBA)",
-    sport: "WNBA Basketball",
-    venue: "TD Garden",
-    description: "Boston's WNBA expansion franchise begins play in 2026. The Fleet will play at TD Garden.",
-    scheduleUrl: "https://fleet.wnba.com",
-    activeMonths: [3, 4, 5, 6, 7, 8], // Apr–Sep (WNBA 2026 expansion)
+    emoji: "�",
+    fullName: "Boston Fleet (PWHL)",
+    sport: "Professional Women's Hockey",
+    venue: "Tsongas Center",
+    description: "Boston's PWHL franchise. Professional women's hockey at its best.",
+    scheduleUrl: "https://www.thepwhl.com/en/teams/boston-fleet/schedule-25-26",
+    activeMonths: [0, 1, 2, 3, 4], // Jan–May
   },
   {
     name: "Free Jacks",
@@ -111,5 +111,15 @@ export const NON_ESPN_TEAMS: NonEspnTeam[] = [
     description: "New England's MLR franchise and 2022 champions. Rugby in Boston is real and growing.",
     scheduleUrl: "https://www.freejacks.com/schedule",
     activeMonths: [1, 2, 3, 4, 5, 6], // Feb–Jul
+  },
+  {
+    name: "Glory",
+    emoji: "🥏",
+    fullName: "Boston Glory",
+    sport: "Ultimate Frisbee (UFA)",
+    venue: "TBD",
+    description: "Boston's Ultimate Frisbee Association franchise. Competitive ultimate at the highest level.",
+    scheduleUrl: "https://www.watchufa.com/glory/schedule",
+    activeMonths: [3, 4, 5, 6, 7, 8], // Apr–Sep
   },
 ];

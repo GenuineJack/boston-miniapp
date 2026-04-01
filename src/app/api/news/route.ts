@@ -5,6 +5,8 @@ const FEEDS = [
   { name: 'WBUR', url: 'https://www.wbur.org/rss/news', color: '#00549f' },
   { name: 'Boston Herald', url: 'https://www.bostonherald.com/feed/', color: '#091f2f' },
   { name: 'Boston Business Journal', url: 'https://feeds.bizjournals.com/bizj_boston', color: '#1a6b3c' },
+  { name: 'GBH News', url: 'https://www.wgbh.org/rss/news', color: '#d1232a' },
+  { name: 'Boston Magazine', url: 'https://www.bostonmagazine.com/feed/', color: '#e31837' },
 ];
 
 export interface NewsItem {
@@ -39,7 +41,7 @@ export async function GET() {
   const results = await Promise.allSettled(
     FEEDS.map(async (feed) => {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 6000);
+      const timeout = setTimeout(() => controller.abort(), 10000);
       try {
         const res = await fetch(feed.url, {
           signal: controller.signal,

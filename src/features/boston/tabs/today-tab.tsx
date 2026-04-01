@@ -14,15 +14,15 @@ import type { NewsItem } from "@/app/api/news/route";
 // ─── MBTA Scrolling Marquee ───────────────────────────────────────────────────
 
 function MbtaMarquee({ alert }: { alert: MbtaAlert | null }) {
-  if (!alert) return null;
+  const text = alert ? `🚇 MBTA Alert: ${alert.text}` : "🚇 MBTA: All lines running on schedule";
   return (
     <div className="bg-boston-gray-50 border-b border-boston-gray-100 overflow-hidden whitespace-nowrap">
       <div className="inline-flex animate-marquee py-1.5">
         <span className="text-[11px] font-bold uppercase tracking-wide t-sans px-4" style={{ color: "#091f2f" }}>
-          🚇 MBTA Alert: {alert.text}
+          {text}
         </span>
         <span className="text-[11px] font-bold uppercase tracking-wide t-sans px-4" style={{ color: "#091f2f" }}>
-          🚇 MBTA Alert: {alert.text}
+          {text}
         </span>
       </div>
     </div>

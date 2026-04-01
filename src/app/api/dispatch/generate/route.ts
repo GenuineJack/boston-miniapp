@@ -190,6 +190,10 @@ async function generateDispatch(authHeader: string | null): Promise<NextResponse
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  return generateDispatchCore();
+}
+
+async function generateDispatchCore(): Promise<NextResponse> {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   if (!anthropicKey) {
     return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
@@ -286,10 +290,16 @@ async function generateDispatch(authHeader: string | null): Promise<NextResponse
 
 // Vercel cron jobs invoke GET requests
 export async function GET(request: NextRequest) {
-  return generateDispatch(request.headers.get("authorization"));
+  // If CRON_SECRET is set, verify it. Otherwise allow Vercel cron through.
+  const cronSecret = process.env.CRON_SECRET;
+  const authHeader = request.headers.get("authorization");
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  return generateDispatchCore();
 }
 
-// Admin panel uses POST
+// Admin panel uses POST (always requires auth)
 export async function POST(request: NextRequest) {
   return generateDispatch(request.headers.get("authorization"));
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Spot } from "@/features/boston/types";
+import { ExternalLink } from "@/neynar-farcaster-sdk/mini";
 
 // ─── Dispatch Content Type ───────────────────────────────────────────────────
 
@@ -176,17 +177,15 @@ export function WhatsNewTab({ spots, onSelectSpot }: WhatsNewTabProps) {
             <SectionHeader emoji="📰" title="What You Missed" />
             <div className="flex flex-col gap-2">
               {dispatch.whatYouMissed.map((item, i) => (
-                <a
+                <ExternalLink
                   key={i}
                   href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="text-xs leading-snug t-sans-navy hover:underline block"
                 >
                   <span className="text-boston-gray-400 mr-1.5">·</span>
                   {item.headline}
                   <span className="text-boston-blue ml-1">→</span>
-                </a>
+                </ExternalLink>
               ))}
             </div>
           </div>
@@ -230,9 +229,9 @@ export function WhatsNewTab({ spots, onSelectSpot }: WhatsNewTabProps) {
                   <p className="text-xs font-bold t-sans-navy">{ev.title}</p>
                   <p className="text-[11px] italic t-serif-body">{ev.detail}</p>
                   {ev.url && (
-                    <a href={ev.url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold t-sans-blue hover:underline">
+                    <ExternalLink href={ev.url} className="text-[10px] font-bold t-sans-blue hover:underline">
                       Details →
-                    </a>
+                    </ExternalLink>
                   )}
                 </div>
               ))}

@@ -3,6 +3,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { Happening, CommunityHappening } from "@/features/boston/types";
 import type { EventItem } from "@/app/api/events/route";
+import { ExternalLink } from "@/neynar-farcaster-sdk/mini";
 
 // ─── Happening definitions ────────────────────────────────────────────────────
 // Each entry has date window logic and a dynamic timing label function.
@@ -498,10 +499,8 @@ function CommunityCard({ happening }: { happening: CommunityHappening }) {
 
       {/* Link */}
       {happening.url && (
-        <a
+        <ExternalLink
           href={happening.url}
-          target="_blank"
-          rel="noopener noreferrer"
           className="inline-flex items-center gap-1 mb-3 transition-opacity duration-150 hover:opacity-70 t-sans-blue happening-ext-link"
         >
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -510,7 +509,7 @@ function CommunityCard({ happening }: { happening: CommunityHappening }) {
             <line x1="10" y1="14" x2="21" y2="3"/>
           </svg>
           More info →
-        </a>
+        </ExternalLink>
       )}
 
       {/* Submitted by */}
@@ -555,10 +554,8 @@ function EventCard({ event }: { event: EventItem }) {
   }
 
   return (
-    <a
+    <ExternalLink
       href={event.url}
-      target="_blank"
-      rel="noopener noreferrer"
       className="block rounded-sm bg-white p-3 no-underline text-inherit border border-boston-gray-100 transition-colors hover:bg-boston-gray-50"
     >
       <div className="flex items-center justify-between mb-1">
@@ -573,7 +570,7 @@ function EventCard({ event }: { event: EventItem }) {
       {event.description && (
         <p className="text-[10px] leading-relaxed t-serif-gray line-clamp-2">{event.description}</p>
       )}
-    </a>
+    </ExternalLink>
   );
 }
 
@@ -681,15 +678,13 @@ export function HappeningsSection({ onNavigateToNeighborhood, onOpenWorldCup, co
           </p>
           <div className="flex flex-wrap gap-2">
             {EXPLORE_MORE.map((link) => (
-              <a
+              <ExternalLink
                 key={link.name}
                 href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="px-3 py-1.5 rounded-full bg-boston-gray-50 text-[10px] font-bold t-sans-blue no-underline hover:bg-boston-gray-100 transition-colors"
               >
                 {link.name} ↗
-              </a>
+              </ExternalLink>
             ))}
           </div>
         </div>

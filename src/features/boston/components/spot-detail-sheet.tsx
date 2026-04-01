@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Spot, CATEGORY_ICONS, Category } from "@/features/boston/types";
-import { useShare } from "@/neynar-farcaster-sdk/mini";
+import { useShare, ExternalLink, openExternalUrl } from "@/neynar-farcaster-sdk/mini";
 
 type SpotDetailSheetProps = {
   spot: Spot | null;
@@ -79,10 +79,10 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
   function handleOpenMaps() {
     if (spot?.address) {
       const query = encodeURIComponent(spot.address);
-      window.open(`https://maps.google.com/?q=${query}`, "_blank");
+      openExternalUrl(`https://maps.google.com/?q=${query}`);
     } else if (spot?.name) {
       const query = encodeURIComponent(`${spot.name} Boston MA`);
-      window.open(`https://maps.google.com/?q=${query}`, "_blank");
+      openExternalUrl(`https://maps.google.com/?q=${query}`);
     }
   }
 
@@ -231,14 +231,12 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
 
           {/* Link */}
           {spot.link && (
-            <a
+            <ExternalLink
               href={spot.link}
-              target="_blank"
-              rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-xs font-bold mb-4 underline underline-offset-2 truncate t-sans-blue"
             >
               🔗 {(() => { try { return new URL(spot.link).hostname.replace(/^www\./, ""); } catch { return spot.link; } })()}
-            </a>
+            </ExternalLink>
           )}
 
           {/* Actions — primary row */}
@@ -257,14 +255,12 @@ export function SpotDetailSheet({ spot, onClose, onViewBuilder }: SpotDetailShee
             </button>
           </div>
           {spot.link && (
-            <a
+            <ExternalLink
               href={spot.link}
-              target="_blank"
-              rel="noopener noreferrer"
               className="flex items-center justify-center py-3 rounded-sm text-sm font-bold uppercase tracking-widest border-2 border-[#1871bd] transition-colors duration-150 mb-2 t-sans-blue min-h-11 no-underline w-full"
             >
               Website
-            </a>
+            </ExternalLink>
           )}
           {/* Secondary close action — less visual weight */}
           <button

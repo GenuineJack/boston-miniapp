@@ -32,3 +32,6 @@ export {
   type ShareOptions,
   type ShareResult,
 } from "./components/share/use-share";
+
+// External link helpers
+export { ExternalLink, openExternalUrl } from "./components/external-link";

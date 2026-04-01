@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { TEAM_METADATA, TeamMetadata } from "./teams-config";
 import { BostonGame, Spot } from "@/features/boston/types";
+import { ExternalLink } from "@/neynar-farcaster-sdk/mini";
 
 const LeafletMapInner = dynamic(
   () => import("@/features/boston/components/leaflet-map").then((m) => ({ default: m.LeafletMapInner })),
@@ -128,14 +129,12 @@ export function TeamDetailSheet({ teamName, games, onClose }: TeamDetailSheetPro
 
       {/* Schedule link */}
       <div className="px-4 py-4 pb-8">
-        <a
+        <ExternalLink
           href={meta.scheduleUrl}
-          target="_blank"
-          rel="noopener noreferrer"
           className="block w-full text-center px-4 py-3 rounded-sm bg-navy text-white text-xs font-bold uppercase tracking-widest t-sans hover:opacity-90 transition-opacity"
         >
           Full Schedule →
-        </a>
+        </ExternalLink>
       </div>
     </div>
   );

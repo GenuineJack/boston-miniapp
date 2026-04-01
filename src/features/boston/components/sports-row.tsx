@@ -2,6 +2,7 @@
 
 import { BostonGame } from "@/features/boston/types";
 import { NON_ESPN_TEAMS } from "./teams-config";
+import { ExternalLink } from "@/neynar-farcaster-sdk/mini";
 
 // ─── ESPN public API ──────────────────────────────────────────────────────────
 // No API key required. Returns today's scoreboard for each sport/league.
@@ -373,11 +374,9 @@ export function SportsRow({ games, loading, fetchFailed, onTeamClick }: SportsRo
           {NON_ESPN_TEAMS.map((team) => {
             const inSeason = team.activeMonths.includes(new Date().getMonth());
             return (
-              <a
+              <ExternalLink
                 key={team.name}
                 href={team.scheduleUrl}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="shrink-0 flex flex-col justify-between p-3 bg-white game-card text-left cursor-pointer hover:bg-boston-gray-50 transition-colors"
               >
                 <div>
@@ -391,7 +390,7 @@ export function SportsRow({ games, loading, fetchFailed, onTeamClick }: SportsRo
                 <p className="uppercase leading-tight t-sans text-boston-gray-400 game-status">
                   {inSeason ? "Schedule →" : "Off-season"}
                 </p>
-              </a>
+              </ExternalLink>
             );
           })}
         </div>

@@ -8,7 +8,7 @@ import { FeaturedBuilderCard } from "@/features/boston/components/featured-build
 import { BuilderFilterBar } from "@/features/boston/components/builder-filter-bar";
 import { BuilderDetailSheet } from "@/features/boston/components/builder-detail-sheet";
 import { BuilderJoinForm } from "@/features/boston/components/builder-join-form";
-import { useFarcasterUser, useSDKReady } from "@/neynar-farcaster-sdk/mini";
+import { useFarcasterUser, useSDKReady, ExternalLink } from "@/neynar-farcaster-sdk/mini";
 
 type BuildersTabProps = {
   onViewBuilderSpots?: (fid: number, username: string) => void;
@@ -142,14 +142,12 @@ export function BuildersTab({ onViewBuilderSpots, onSpotClick, pendingBuilderVie
                 Open in Warpcast to join the builder directory.
               </p>
             </div>
-            <a
+            <ExternalLink
               href="https://warpcast.com/~/mini-app/launch?domain=boston.neynar.com"
-              target="_blank"
-              rel="noopener noreferrer"
               className="shrink-0 px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest t-sans bg-boston-blue text-white hover:opacity-90 transition-opacity"
             >
               Open →
-            </a>
+            </ExternalLink>
           </div>
         )}
 

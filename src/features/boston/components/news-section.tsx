@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { NewsItem } from '@/app/api/news/route';
+import { ExternalLink } from '@/neynar-farcaster-sdk/mini';
 
 interface NewsSectionProps {
   cachedNews: NewsItem[] | null;
@@ -60,7 +61,7 @@ export function NewsSection({ cachedNews, onNewsLoaded }: NewsSectionProps) {
       </h2>
       <div>
         {items.slice(0, 8).map((item, i) => (
-          <a key={i} href={item.link} target="_blank" rel="noopener noreferrer"
+          <ExternalLink key={i} href={item.link}
             className="bg-white news-item-link no-underline text-inherit">
             <div className="news-item-meta">
               <span className="t-sans news-source-label" style={{ color: item.sourceColor }}>
@@ -75,7 +76,7 @@ export function NewsSection({ cachedNews, onNewsLoaded }: NewsSectionProps) {
             <p className="t-sans-navy news-headline">
               {item.title}
             </p>
-          </a>
+          </ExternalLink>
         ))}
       </div>
       <p className="t-sans-gray news-disclaimer">

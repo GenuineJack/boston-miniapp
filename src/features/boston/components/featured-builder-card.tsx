@@ -2,6 +2,7 @@
 
 import { Builder, BUILDER_CATEGORY_ICONS, BuilderCategory } from "@/features/boston/types";
 import { BuilderAvatar } from "@/features/boston/components/builder-card";
+import { ExternalLink } from "@/neynar-farcaster-sdk/mini";
 
 type FeaturedBuilderCardProps = {
   builder: Builder & { spotCount?: number };
@@ -91,15 +92,13 @@ export function FeaturedBuilderCard({ builder, onClick, onSpotFilterClick }: Fea
         >
           Building:{" "}
           {builder.projectUrl ? (
-            <a
+            <ExternalLink
               href={builder.projectUrl}
-              target="_blank"
-              rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="font-bold hover:underline text-boston-blue-light"
             >
               {builder.projectName}
-            </a>
+            </ExternalLink>
           ) : (
             <span className="font-bold">{builder.projectName}</span>
           )}

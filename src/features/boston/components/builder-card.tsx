@@ -1,6 +1,7 @@
 "use client";
 
 import { Builder, BUILDER_CATEGORY_ICONS, BuilderCategory } from "@/features/boston/types";
+import { ExternalLink } from "@/neynar-farcaster-sdk/mini";
 
 type BuilderCardProps = {
   builder: Builder & { spotCount?: number };
@@ -119,15 +120,13 @@ export function BuilderCard({ builder, onClick, onSpotFilterClick }: BuilderCard
         >
           Building:{" "}
           {(builder.projectLinks?.[0] ?? builder.projectUrl) ? (
-            <a
+            <ExternalLink
               href={builder.projectLinks?.[0] ?? builder.projectUrl!}
-              target="_blank"
-              rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="font-bold hover:underline text-boston-blue"
             >
               {builder.projectName}
-            </a>
+            </ExternalLink>
           ) : (
             <span className="font-bold">{builder.projectName}</span>
           )}

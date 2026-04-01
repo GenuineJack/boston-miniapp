@@ -1,6 +1,7 @@
 "use client";
 
 import { Spot, CATEGORY_ICONS, Category } from "@/features/boston/types";
+import { ExternalLink, openExternalUrl } from "@/neynar-farcaster-sdk/mini";
 
 type SpotCardProps = {
   spot: Spot;
@@ -11,7 +12,7 @@ type SpotCardProps = {
 function handleDirections(spot: Spot, e: React.MouseEvent) {
   e.stopPropagation();
   const query = encodeURIComponent(spot.address ?? `${spot.name} Boston MA`);
-  window.open(`https://maps.google.com/?q=${query}`, "_blank");
+  openExternalUrl(`https://maps.google.com/?q=${query}`);
 }
 
 function handleShare(spot: Spot, e: React.MouseEvent) {
@@ -19,7 +20,7 @@ function handleShare(spot: Spot, e: React.MouseEvent) {
   // Always use Warpcast compose URL — navigator.share is unreliable in mini-app webviews
   const text = `${spot.name} in ${spot.neighborhood} — check it out on /boston`;
   const url = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`;
-  window.open(url, "_blank", "noopener,noreferrer");
+  openExternalUrl(url);
 }
 
 export function SpotCard({ spot, onClick, isNew }: SpotCardProps) {
@@ -79,10 +80,8 @@ export function SpotCard({ spot, onClick, isNew }: SpotCardProps) {
         {/* Quick action icons */}
         <div className="flex items-center gap-1 shrink-0">
           {spot.link && (
-            <a
+            <ExternalLink
               href={spot.link}
-              target="_blank"
-              rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="w-7 h-7 flex items-center justify-center rounded-sm transition-colors duration-150 hover:bg-[#f0f0f0] text-boston-gray-400"
               title="Website"
@@ -93,7 +92,7 @@ export function SpotCard({ spot, onClick, isNew }: SpotCardProps) {
                 <line x1="2" y1="12" x2="22" y2="12"/>
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
               </svg>
-            </a>
+            </ExternalLink>
           )}
           <button
             onClick={(e) => handleDirections(spot, e)}

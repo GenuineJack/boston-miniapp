@@ -320,7 +320,12 @@ export async function generateDispatchContent(options?: { force?: boolean }): Pr
     }
 
     const data = await response.json();
-    const rawContent = data.content?.[0]?.text ?? "";
+    let rawContent = (data.content?.[0]?.text ?? "").trim();
+
+    // Strip markdown code fences if the AI wrapped its response
+    if (rawContent.startsWith("```")) {
+      rawContent = rawContent.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
+    }
 
     try {
       JSON.parse(rawContent);

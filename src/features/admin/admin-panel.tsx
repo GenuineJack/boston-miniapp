@@ -394,7 +394,7 @@ export function AdminPanel() {
                   </div>
                 </div>
               ) : (
-                <pre className="text-[10px] whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto bg-boston-gray-50 p-2 rounded-sm">
+                <pre className="text-[10px] whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto bg-boston-gray-50 p-2 rounded-sm t-sans-navy">
                   {todayDispatch.content.slice(0, 500)}{todayDispatch.content.length > 500 ? "..." : ""}
                 </pre>
               )}
